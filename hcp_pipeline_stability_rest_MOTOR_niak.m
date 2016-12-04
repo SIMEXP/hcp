@@ -42,7 +42,7 @@ opt_g.min_xcorr_func = 0.5; % The minimum xcorr score for an fMRI dataset to be 
 opt_g.min_xcorr_anat = 0.5; % The minimum xcorr score for an fMRI dataset to be included. This metric is a tool for quality control which assess the quality of non-linear coregistration of the anatomical image in stereotaxic space. Manual inspection of the values during QC is necessary to properly set this threshold.
 opt_g.exclude_subject = {'HCP128026'}; % If for whatever reason some subjects have to be excluded that were not caught by the quality control metrics, it is possible to manually specify their IDs here.
 opt_g.type_files = 'rest'; % Specify to the grabber to prepare the files for the STABILITY_REST pipeline
-opt_g.filter.run = {'motRL','motLR'};
+opt_g.filter.run = {'motRL'};
 files_in = niak_grab_fmri_preprocess('/gs/project/gsf-624-aa/HCP/fmri_preprocess_all_tasks_niak-fix-scrub_900R',opt_g); % Replace the folder by the path where the results of the fMRI preprocessing pipeline were stored. 
 
 %%%%%%%%%%%%%%%%%%%%%
@@ -79,12 +79,12 @@ files_in = niak_grab_fmri_preprocess('/gs/project/gsf-624-aa/HCP/fmri_preprocess
 %% Options %%
 %%%%%%%%%%%%%
 
-opt.folder_out = '/gs/project/gsf-624-aa/HCP/basc_MOTOR_rl-lr_niak-fix-scrub_900R/'; % Where to store the results
+opt.folder_out = '/gs/project/gsf-624-aa/HCP/basc_MOTOR_rl_niak-fix-scrub_900R/'; % Where to store the results
 opt.region_growing.thre_size = 1000; %  the size of the regions, when they stop growing. A threshold of 1000 mm3 will give about 1000 regions on the grey matter. 
 opt.grid_scales = [10:10:100 120:20:200 240:40:500]'; % Search for stable clusters in the range 10 to 500 
 % use mstep sacle if exist or leave it empty
-%mstep_file = [ opt.folder_out filesep 'stability_group/msteps_group.mat']; 
-mstep_file = '';%temporarly run only scale 7 
+mstep_file = [ opt.folder_out filesep 'stability_group/msteps_group.mat']; 
+%mstep_file = '';%temporarly run only scale 7 
 if psom_exist(mstep_file)
    warning ('The file %s exist, I will use MSTEP scale',mstep_file);
    load (mstep_file);

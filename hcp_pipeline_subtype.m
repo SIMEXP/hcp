@@ -33,8 +33,8 @@
 ##### BUILD PHENO FILE #####
 
 ### Clean Pheno file ###
-#path_root = '/gs/project/gsf-624-aa/HCP/'
-path_root = '/media/yassinebha/database26/Drive/HCP/subtypes_scores/26-10-2016/'
+path_root = '/gs/project/gsf-624-aa/HCP/';
+#path_root = '/media/yassinebha/database26/Drive/HCP/subtypes_scores/26-10-2016/';
 file_pheno = [path_root 'pheno/hcp_all_pheno.csv'];
 pheno_raw  = niak_read_csv_cell (file_pheno);
 
@@ -46,12 +46,12 @@ pheno_clean = pheno_raw(:,mask_pheno);
 pheno_clean = [pheno_raw(:,ismember(pheno_raw(1,:),'Subject'))(:,1) pheno_clean];
 
 ## Grab connectivity maps
-path_connectome = [path_root 'connectome_MOTOR_20161129/'];
+path_connectome = [path_root 'connectome_MOTOR_20161203/'];
 files_conn = niak_grab_connectome(path_connectome);
 files_in.data = files_conn.rmap;
 
 ## Clean pheno according to files_in
-list_subject = fieldnames(files_in.data.VISUAL);
+list_subject = fieldnames(files_in.data.(fieldnames(files_in.data){1}));
 mask_id_stack = zeros(length(pheno_clean)-1,1);
 for num_s = 1:length(list_subject)
     subject = list_subject{num_s};
@@ -139,32 +139,85 @@ files_in.mask = files_conn.network_rois;
 files_in.model = path_model_final;
 
 # General
-opt.folder_out = [path_root 'subtype_MOTOR_RL_20161129'];
+opt.folder_out = [path_root 'subtype_MOTOR_RL_20161203'];
 
 # Confound regression
-opt.stack.regress_conf = {'Age_in_Yrs','Gender','Handedness','FD_scrubbed'};     % a list of varaible names to be regressed out
+opt.stack.regress_conf = {'FD_scrubbed'};     % a list of varaible names to be regressed out
 
 # Subtyping
 opt.subtype.nb_subtype = 5;       % the number of subtypes to extract
 opt.sub_map_type = 'mean';        % the model for the subtype maps (options are 'mean' or 'median')
 
-## Association testing via GLM
+## Dexterity Association test
 # GLM options
-opt.association.Dexterity_AgeAdj.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
-opt.association.Dexterity_AgeAdj.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
-opt.association.Dexterity_AgeAdj.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
-opt.association.Dexterity_AgeAdj.normalize_type = 'mean';              % type of correction for normalization (options: 'mean', 'mean_var')
-opt.association.Dexterity_AgeAdj.flag_intercept = true;                % turn on/off adding a constant covariate to the model
+opt.association.Dexterity_Unadj.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
+opt.association.Dexterity_Unadj.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
+opt.association.Dexterity_Unadj.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
+opt.association.Dexterity_Unadj.normalize_type = 'mean';              % type of correction for normalization (options: 'mean', 'mean_var')
+opt.association.Dexterity_Unadj.flag_intercept = true;                % turn on/off adding a constant covariate to the model
 
-# Test a main effect of  Dexterity_AgeAdjfactors
-opt.association.Dexterity_AgeAdj.contrast.Dexterity_AgeAdj = 1;    % scalar number for the weight of the variable in the contrast
-opt.association.Dexterity_AgeAdj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
-opt.association.Dexterity_AgeAdj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
+# Test a main effect of  Dexterity_Unadjfactors
+opt.association.Dexterity_Unadj.contrast.Dexterity_Unadj = 1;    % scalar number for the weight of the variable in the contrast
+opt.association.Dexterity_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+opt.association.Dexterity_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
+opt.association.Dexterity_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
 
 # Visualization
-opt.association.Dexterity_AgeAdj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
+opt.association.Dexterity_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
+
+## Strength Association test
+# GLM options
+opt.association.Strength_Unadj.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
+opt.association.Strength_Unadj.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
+opt.association.Strength_Unadj.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
+opt.association.Strength_Unadj.normalize_type = 'mean';              % type of correction for normalization (options: 'mean', 'mean_var')
+opt.association.Strength_Unadj.flag_intercept = true;                % turn on/off adding a constant covariate to the model
+
+# Test a main effect of  Strength_Unadjfactors
+opt.association.Strength_Unadj.contrast.Strength_Unadj = 1;    % scalar number for the weight of the variable in the contrast
+opt.association.Strength_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+opt.association.Strength_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
+opt.association.Strength_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+
+# Visualization
+opt.association.Strength_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
+
+
+## Endurance Association test
+# GLM options
+opt.association.Endurance_Unadj.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
+opt.association.Endurance_Unadj.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
+opt.association.Endurance_Unadj.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
+opt.association.Endurance_Unadj.normalize_type = 'mean';              % type of correction for normalization (options: 'mean', 'mean_var')
+opt.association.Endurance_Unadj.flag_intercept = true;                % turn on/off adding a constant covariate to the model
+
+# Test a main effect of  Endurance_Unadjfactors
+opt.association.Endurance_Unadj.contrast.Endurance_Unadj = 1;    % scalar number for the weight of the variable in the contrast
+opt.association.Endurance_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+opt.association.Endurance_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
+opt.association.Endurance_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+
+# Visualization
+opt.association.Endurance_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
+
+
+## Handedness Association test
+# GLM options
+opt.association.Handedness.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
+opt.association.Handedness.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
+opt.association.Handedness.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
+opt.association.Handedness.normalize_type = 'mean';              % type of correction for normalization (options: 'mean', 'mean_var')
+opt.association.Handedness.flag_intercept = true;                % turn on/off adding a constant covariate to the model
+
+# Test a main effect of  Handednessfactors
+opt.association.Handedness.contrast.Handedness = 1;    % scalar number for the weight of the variable in the contrast
+opt.association.Handedness.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+opt.association.Handedness.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
+opt.association.Handedness.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+
+# Visualization
+opt.association.Handedness.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
 
 ##### Run the pipeline  #####
-
-opt.flag_test = false;  % Put this flag to true to just generate the pipeline without running it.
+opt.flag_test ='false' ;  % Put this flag to true to just generate the pipeline without running it.
 [pipeline,opt] = niak_pipeline_subtype(files_in,opt);

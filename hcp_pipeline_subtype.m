@@ -153,7 +153,6 @@ opt.sub_map_type = 'mean';        % the model for the subtype maps (options are 
 opt.association.Dexterity_Unadj.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
 opt.association.Dexterity_Unadj.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
 opt.association.Dexterity_Unadj.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
-opt.association.Dexterity_Unadj.normalize_type = 'mean';              % type of correction for normalization (options: 'mean', 'mean_var')
 opt.association.Dexterity_Unadj.flag_intercept = true;                % turn on/off adding a constant covariate to the model
 
 # Test a main effect of  Dexterity_Unadjfactors
@@ -170,7 +169,6 @@ opt.association.Dexterity_Unadj.type_visu = 'continuous';  % type of data for vi
 opt.association.Strength_Unadj.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
 opt.association.Strength_Unadj.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
 opt.association.Strength_Unadj.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
-opt.association.Strength_Unadj.normalize_type = 'mean';              % type of correction for normalization (options: 'mean', 'mean_var')
 opt.association.Strength_Unadj.flag_intercept = true;                % turn on/off adding a constant covariate to the model
 
 # Test a main effect of  Strength_Unadjfactors
@@ -188,7 +186,6 @@ opt.association.Strength_Unadj.type_visu = 'continuous';  % type of data for vis
 opt.association.Endurance_Unadj.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
 opt.association.Endurance_Unadj.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
 opt.association.Endurance_Unadj.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
-opt.association.Endurance_Unadj.normalize_type = 'mean';              % type of correction for normalization (options: 'mean', 'mean_var')
 opt.association.Endurance_Unadj.flag_intercept = true;                % turn on/off adding a constant covariate to the model
 
 # Test a main effect of  Endurance_Unadjfactors
@@ -206,7 +203,6 @@ opt.association.Endurance_Unadj.type_visu = 'continuous';  % type of data for vi
 opt.association.Handedness.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
 opt.association.Handedness.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
 opt.association.Handedness.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
-opt.association.Handedness.normalize_type = 'mean';              % type of correction for normalization (options: 'mean', 'mean_var')
 opt.association.Handedness.flag_intercept = true;                % turn on/off adding a constant covariate to the model
 
 # Test a main effect of  Handednessfactors

@@ -146,7 +146,7 @@ opt.stack.regress_conf = {'FD_scrubbed'};     % a list of varaible names to be r
 
 # Subtyping
 opt.subtype.nb_subtype = 5;       % the number of subtypes to extract
-opt.sub_map_type = 'mean';        % the model for the subtype maps (options are 'mean' or 'median')
+opt.subtype.sub_map_type = 'mean';        % the model for the subtype maps (options are 'mean' or 'median')
 
 ## Dexterity Association test
 # GLM options

@@ -99,7 +99,7 @@ end
 
 # put back the header
 scrub_clean_final = [scrub_clean_header ; scrub_clean_final];
-merge_pheno_scrub = combine_cell_tab(pheno_clean_final,scrub_clean_final);
+merge_pheno_scrub = merge_cell_tab(pheno_clean_final,scrub_clean_final);
 
 # remove extra subject id colomn
 merge_pheno_scrub = merge_pheno_scrub(:,~ismember(merge_pheno_scrub(1,:),''));
@@ -215,5 +215,5 @@ opt.association.Handedness.contrast.Gender = 0;               % scalar number fo
 opt.association.Handedness.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
 
 ##### Run the pipeline  #####
-opt.flag_test ='false' ;  % Put this flag to true to just generate the pipeline without running it.
-[pipeline,opt] = niak_pipeline_subtype(files_in,opt);
+opt.flag_test =false ;  % Put this flag to true to just generate the pipeline without running it.
+pipeline = niak_pipeline_subtype(files_in,opt);

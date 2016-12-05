@@ -33,13 +33,15 @@
 ##### BUILD PHENO FILE #####
 
 ### Clean Pheno file ###
-path_root = '/gs/project/gsf-624-aa/HCP/';
-#path_root = '/media/yassinebha/database26/Drive/HCP/subtypes_scores/26-10-2016/';
+
+#path_root = '/gs/project/gsf-624-aa/HCP/';#guillimin
+path_root = '/home/yassinebha/data/HCP/';#stark
+#path_root = '/media/yassinebha/database26/Drive/HCP/subtypes_scores/26-10-2016/';#noisetier
 file_pheno = [path_root 'pheno/hcp_all_pheno.csv'];
 pheno_raw  = niak_read_csv_cell (file_pheno);
 
 ## Select pheno
-list_pheno  = {'Age_in_Yrs','Twin_Stat','Zygosity','Mother_ID','Father_ID','Handedness','Gender','Endurance_Unadj','Endurance_AgeAdj','Dexterity_Unadj','Dexterity_AgeAdj','Strength_Unadj','Strength_AgeAdj'};
+list_pheno  = {'Age_in_Yrs','Twin_Stat','Zygosity','Mother_ID','Father_ID','Handedness','Gender','Endurance_Unadj','Endurance_AgeAdj','Dexterity_Unadj','Dexterity_AgeAdj','Strength_Unadj','Strength_AgeAdj','GaitSpeed_Comp','BMI','Taste_Unadj','PainInterf_Tscore','Odor_Unadj'};
 mask_pheno  = ismember(pheno_raw(1,:),list_pheno);
 pheno_clean = pheno_raw(:,mask_pheno);
 # Add the Subject IDs colomn
@@ -119,7 +121,7 @@ merge_pheno_scrub(:,index) = strrep (merge_pheno_scrub(:,index),'F','0');
 
 # convert the values into a series of numerical covariates
 list_id = merge_pheno_scrub(2:end,1);
-labels_y = {'Subject','Age_in_Yrs','Handedness','Gender','Endurance_Unadj','Endurance_AgeAdj','Dexterity_Unadj','Dexterity_AgeAdj','Strength_Unadj','Strength_AgeAdj','FD','FD_scrubbed' };
+labels_y = {'Subject','Age_in_Yrs','Handedness','Gender','Endurance_Unadj','Endurance_AgeAdj','Dexterity_Unadj','Dexterity_AgeAdj','Strength_Unadj','Strength_AgeAdj','GaitSpeed_Comp','FD','FD_scrubbed','BMI','Taste_Unadj','PainInterf_Tscore','Odor_Unadj'};
 mask_model  = ismember(merge_pheno_scrub(1,:),labels_y);
 model_clean = merge_pheno_scrub(:,mask_model);
 tab_model_clean = str2double(model_clean(2:end,2:end));
@@ -198,6 +200,24 @@ opt.association.Endurance_Unadj.contrast.Gender = 0;               % scalar numb
 opt.association.Endurance_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
 
 
+## GaitSpeed Association test
+# GLM options
+opt.association.GaitSpeed_Comp.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
+opt.association.GaitSpeed_Comp.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
+opt.association.GaitSpeed_Comp.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
+opt.association.GaitSpeed_Comp.flag_intercept = true;                % turn on/off adding a constant covariate to the model
+
+# Test a main effect of  GaitSpeed_Compfactors
+opt.association.GaitSpeed_Comp.contrast.GaitSpeed_Comp = 1;    % scalar number for the weight of the variable in the contrast
+opt.association.GaitSpeed_Comp.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+opt.association.GaitSpeed_Comp.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
+opt.association.GaitSpeed_Comp.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+
+# Visualization
+opt.association.GaitSpeed_Comp.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
+
+
+
 ## Handedness Association test
 # GLM options
 opt.association.Handedness.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
@@ -213,6 +233,24 @@ opt.association.Handedness.contrast.Gender = 0;               % scalar number fo
 
 # Visualization
 opt.association.Handedness.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
+
+
+## BMI Association test
+# GLM options
+opt.association.BMI.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
+opt.association.BMI.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
+opt.association.BMI.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
+opt.association.BMI.flag_intercept = true;                % turn on/off adding a constant covariate to the model
+
+# Test a main effect of  BMIfactors
+opt.association.BMI.contrast.BMI = 1;    % scalar number for the weight of the variable in the contrast
+opt.association.BMI.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+opt.association.BMI.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
+opt.association.BMI.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+
+# Visualization
+opt.association.BMI.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
+
 
 ##### Run the pipeline  #####
 opt.flag_test =false ;  % Put this flag to true to just generate the pipeline without running it.

@@ -147,7 +147,7 @@ opt.folder_out = [path_root 'subtype_MOTOR_RL_20161203'];
 opt.stack.regress_conf = {'FD_scrubbed'};     % a list of varaible names to be regressed out
 
 # Subtyping
-opt.subtype.nb_subtype = 5;       % the number of subtypes to extract
+opt.subtype.nb_subtype = 10;       % the number of subtypes to extract
 opt.subtype.sub_map_type = 'mean';        % the model for the subtype maps (options are 'mean' or 'median')
 
 ## Dexterity Association test
@@ -251,6 +251,56 @@ opt.association.BMI.contrast.Gender = 0;               % scalar number for the w
 # Visualization
 opt.association.BMI.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
 
+
+## Taste_Unadj Association test
+# GLM options
+opt.association.Taste_Unadj.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
+opt.association.Taste_Unadj.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
+opt.association.Taste_Unadj.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
+opt.association.Taste_Unadj.flag_intercept = true;                % turn on/off adding a constant covariate to the model
+
+# Test a main effect of  Taste_Unadjfactors
+opt.association.Taste_Unadj.contrast.Taste_Unadj = 1;    % scalar number for the weight of the variable in the contrast
+opt.association.Taste_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+opt.association.Taste_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
+opt.association.Taste_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+
+# Visualization
+opt.association.Taste_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
+
+
+## Odor_Unadj Association test
+# GLM options
+opt.association.Odor_Unadj.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
+opt.association.Odor_Unadj.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
+opt.association.Odor_Unadj.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
+opt.association.Odor_Unadj.flag_intercept = true;                % turn on/off adding a constant covariate to the model
+
+# Test a main effect of  Odor_Unadjfactors
+opt.association.Odor_Unadj.contrast.Odor_Unadj = 1;    % scalar number for the weight of the variable in the contrast
+opt.association.Odor_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+opt.association.Odor_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
+opt.association.Odor_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+
+# Visualization
+opt.association.Odor_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
+
+
+## PainInterf_Tscore Association test
+# GLM options
+opt.association.PainInterf_Tscore.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
+opt.association.PainInterf_Tscore.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
+opt.association.PainInterf_Tscore.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
+opt.association.PainInterf_Tscore.flag_intercept = true;                % turn on/off adding a constant covariate to the model
+
+# Test a main effect of  PainInterf_Tscorefactors
+opt.association.PainInterf_Tscore.contrast.PainInterf_Tscore = 1;    % scalar number for the weight of the variable in the contrast
+opt.association.PainInterf_Tscore.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+opt.association.PainInterf_Tscore.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
+opt.association.PainInterf_Tscore.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+
+# Visualization
+opt.association.PainInterf_Tscore.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
 
 ##### Run the pipeline  #####
 opt.flag_test =false ;  % Put this flag to true to just generate the pipeline without running it.

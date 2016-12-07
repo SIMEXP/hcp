@@ -30,13 +30,36 @@
 % OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 % THE SOFTWARE.
 
+%% Setting input/output server 
+[status,cmdout] = system ('uname -n');
+server          = strtrim(cmdout);
+if strfind(server,'lg-1r') % This is guillimin
+    path_root = '/gs/project/gsf-624-aa/HCP/';#guillimin 
+    fprintf ('server: %s (Guillimin) \n ',server)
+    my_user_name = getenv('USER');
+elseif strfind(server,'stark') % this is stark
+    path_root = '/home/yassinebha/data/HCP/';#stark  
+    fprintf ('server: %s (Stark \n',server)
+    my_user_name = getenv('USER');
+else
+    switch server
+        case 'magma' % this is magma
+        path_root = '/home/yassinebha/data/HCP/'
+        fprintf ('server: %s\n',server)
+        my_user_name = getenv('USER');
+
+        case 'noisetier' % this is noisetier
+        path_root ='/media/yassinebha/database26/Drive/HCP/';
+        fprintf ('server: %s\n',server)
+        my_user_name = getenv('USER');
+    end
+end
+
+
 ##### BUILD PHENO FILE #####
 
 ### Clean Pheno file ###
 
-#path_root = '/gs/project/gsf-624-aa/HCP/';#guillimin
-path_root = '/home/yassinebha/data/HCP/';#stark
-#path_root = '/media/yassinebha/database26/Drive/HCP/subtypes_scores/26-10-2016/';#noisetier
 file_pheno = [path_root 'pheno/hcp_all_pheno.csv'];
 pheno_raw  = niak_read_csv_cell (file_pheno);
 
@@ -140,15 +163,15 @@ files_in.mask = files_conn.network_rois;
 # Model
 files_in.model = path_model_final;
 
-# General
-opt.folder_out = [path_root 'subtype_MOTOR_RL_20161203'];
-
 # Confound regression
 opt.stack.regress_conf = {'FD_scrubbed'};     % a list of varaible names to be regressed out
 
 # Subtyping
-opt.subtype.nb_subtype = 10;       % the number of subtypes to extract
+opt.subtype.nb_subtype = 7;       % the number of subtypes to extract
 opt.subtype.sub_map_type = 'mean';        % the model for the subtype maps (options are 'mean' or 'median')
+
+# General
+opt.folder_out = [path_root 'subtype_' num2str(opt.subtype.nb_subtype) '_MOTOR_RL_' date];
 
 ## Dexterity Association test
 # GLM options
@@ -305,3 +328,7 @@ opt.association.PainInterf_Tscore.type_visu = 'continuous';  % type of data for 
 ##### Run the pipeline  #####
 opt.flag_test =false ;  % Put this flag to true to just generate the pipeline without running it.
 pipeline = niak_pipeline_subtype(files_in,opt);
+
+## Extra
+% make a copy of this script to output folder
+system(['cp ' mfilename('fullpath') '.m ' opt.folder_out '.']);

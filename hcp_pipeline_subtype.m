@@ -327,6 +327,25 @@ for ll = 1: length(list_subtype)
     # Visualization
     opt.association.PainInterf_Tscore.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
 
+    
+    ## FD_scrubbed Association test
+    # GLM options
+    opt.association.FD_scrubbed.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
+    opt.association.FD_scrubbed.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
+    opt.association.FD_scrubbed.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
+    opt.association.FD_scrubbed.flag_intercept = true;                % turn on/off adding a constant covariate to the model
+
+    # Test a main effect of  FD_scrubbed factors
+    opt.association.FD_scrubbed.contrast.FD_scrubbed = 1;    % scalar number for the weight of the variable in the contrast
+    opt.association.FD_scrubbed.contrast.BMI = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.FD_scrubbed.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.FD_scrubbed.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.FD_scrubbed.contrast.Endurance_Unadj = 0;               % scalar number for the weight of the variable in the contrast
+
+    # Visualization
+    opt.association.FD_scrubbed.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
+    
+    
     ##### Run the pipeline  #####
     opt.flag_test =false ;  % Put this flag to true to just generate the pipeline without running it.
     pipeline = niak_pipeline_subtype(files_in,opt);

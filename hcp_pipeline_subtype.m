@@ -39,7 +39,7 @@ if strfind(server,'lg-1r') % This is guillimin
     my_user_name = getenv('USER');
 elseif strfind(server,'stark') % this is stark
     path_root = '/home/yassinebha/data/HCP/';#stark  
-    fprintf ('server: %s (Stark \n',server)
+    fprintf ('server: %s \n',server)
     my_user_name = getenv('USER');
 else
     switch server
@@ -136,11 +136,11 @@ merge_pheno_scrub(2:end,1) = strcat('HCP',merge_pheno_scrub(2:end,1));
 niak_write_csv_cell([path_root 'pheno/motor_RL_pheno_scrub_raw.csv'],merge_pheno_scrub);
 
 ##### PREPARE MODEL FILE #####
-# recode gender to M=1 F=0
+# recode gender to M=1 F=2
 index = strfind(merge_pheno_scrub(1,:),'Gender');
 index = find(~cellfun(@isempty,index));
 merge_pheno_scrub(:,index) = strrep (merge_pheno_scrub(:,index),'M','1');
-merge_pheno_scrub(:,index) = strrep (merge_pheno_scrub(:,index),'F','0');
+merge_pheno_scrub(:,index) = strrep (merge_pheno_scrub(:,index),'F','2');
 
 # convert the values into a series of numerical covariates
 list_id = merge_pheno_scrub(2:end,1);
@@ -167,168 +167,171 @@ files_in.model = path_model_final;
 opt.stack.regress_conf = {'FD_scrubbed'};     % a list of varaible names to be regressed out
 
 # Subtyping
-opt.subtype.nb_subtype = 7;       % the number of subtypes to extract
-opt.subtype.sub_map_type = 'mean';        % the model for the subtype maps (options are 'mean' or 'median')
+list_subtype = {3 5 6 7 10  15 20};
+for ll = 1: length(list_subtype)
+    opt.subtype.nb_subtype = list_subtype{ll};       % the number of subtypes to extract
+    opt.subtype.sub_map_type = 'mean';        % the model for the subtype maps (options are 'mean' or 'median')
 
-# General
-opt.folder_out = [path_root 'subtype_' num2str(opt.subtype.nb_subtype) '_MOTOR_RL_' date];
+    # General
+    opt.folder_out = [path_root 'subtype_' num2str(opt.subtype.nb_subtype) '_MOTOR_RL_' date];
 
-## Dexterity Association test
-# GLM options
-opt.association.Dexterity_Unadj.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
-opt.association.Dexterity_Unadj.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
-opt.association.Dexterity_Unadj.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
-opt.association.Dexterity_Unadj.flag_intercept = true;                % turn on/off adding a constant covariate to the model
+    ## Dexterity Association test
+    # GLM options
+    opt.association.Dexterity_Unadj.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
+    opt.association.Dexterity_Unadj.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
+    opt.association.Dexterity_Unadj.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
+    opt.association.Dexterity_Unadj.flag_intercept = true;                % turn on/off adding a constant covariate to the model
 
-# Test a main effect of  Dexterity_Unadjfactors
-opt.association.Dexterity_Unadj.contrast.Dexterity_Unadj = 1;    % scalar number for the weight of the variable in the contrast
-opt.association.Dexterity_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
-opt.association.Dexterity_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
-opt.association.Dexterity_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+    # Test a main effect of  Dexterity_Unadjfactors
+    opt.association.Dexterity_Unadj.contrast.Dexterity_Unadj = 1;    % scalar number for the weight of the variable in the contrast
+    opt.association.Dexterity_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.Dexterity_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.Dexterity_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
 
-# Visualization
-opt.association.Dexterity_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
+    # Visualization
+    opt.association.Dexterity_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
 
-## Strength Association test
-# GLM options
-opt.association.Strength_Unadj.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
-opt.association.Strength_Unadj.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
-opt.association.Strength_Unadj.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
-opt.association.Strength_Unadj.flag_intercept = true;                % turn on/off adding a constant covariate to the model
+    ## Strength Association test
+    # GLM options
+    opt.association.Strength_Unadj.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
+    opt.association.Strength_Unadj.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
+    opt.association.Strength_Unadj.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
+    opt.association.Strength_Unadj.flag_intercept = true;                % turn on/off adding a constant covariate to the model
 
-# Test a main effect of  Strength_Unadjfactors
-opt.association.Strength_Unadj.contrast.Strength_Unadj = 1;    % scalar number for the weight of the variable in the contrast
-opt.association.Strength_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
-opt.association.Strength_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
-opt.association.Strength_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+    # Test a main effect of  Strength_Unadjfactors
+    opt.association.Strength_Unadj.contrast.Strength_Unadj = 1;    % scalar number for the weight of the variable in the contrast
+    opt.association.Strength_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.Strength_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.Strength_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
 
-# Visualization
-opt.association.Strength_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
-
-
-## Endurance Association test
-# GLM options
-opt.association.Endurance_Unadj.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
-opt.association.Endurance_Unadj.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
-opt.association.Endurance_Unadj.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
-opt.association.Endurance_Unadj.flag_intercept = true;                % turn on/off adding a constant covariate to the model
-
-# Test a main effect of  Endurance_Unadjfactors
-opt.association.Endurance_Unadj.contrast.Endurance_Unadj = 1;    % scalar number for the weight of the variable in the contrast
-opt.association.Endurance_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
-opt.association.Endurance_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
-opt.association.Endurance_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
-
-# Visualization
-opt.association.Endurance_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
+    # Visualization
+    opt.association.Strength_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
 
 
-## GaitSpeed Association test
-# GLM options
-opt.association.GaitSpeed_Comp.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
-opt.association.GaitSpeed_Comp.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
-opt.association.GaitSpeed_Comp.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
-opt.association.GaitSpeed_Comp.flag_intercept = true;                % turn on/off adding a constant covariate to the model
+    ## Endurance Association test
+    # GLM options
+    opt.association.Endurance_Unadj.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
+    opt.association.Endurance_Unadj.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
+    opt.association.Endurance_Unadj.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
+    opt.association.Endurance_Unadj.flag_intercept = true;                % turn on/off adding a constant covariate to the model
 
-# Test a main effect of  GaitSpeed_Compfactors
-opt.association.GaitSpeed_Comp.contrast.GaitSpeed_Comp = 1;    % scalar number for the weight of the variable in the contrast
-opt.association.GaitSpeed_Comp.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
-opt.association.GaitSpeed_Comp.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
-opt.association.GaitSpeed_Comp.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+    # Test a main effect of  Endurance_Unadjfactors
+    opt.association.Endurance_Unadj.contrast.Endurance_Unadj = 1;    % scalar number for the weight of the variable in the contrast
+    opt.association.Endurance_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.Endurance_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.Endurance_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
 
-# Visualization
-opt.association.GaitSpeed_Comp.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
-
-
-
-## Handedness Association test
-# GLM options
-opt.association.Handedness.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
-opt.association.Handedness.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
-opt.association.Handedness.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
-opt.association.Handedness.flag_intercept = true;                % turn on/off adding a constant covariate to the model
-
-# Test a main effect of  Handednessfactors
-opt.association.Handedness.contrast.Handedness = 1;    % scalar number for the weight of the variable in the contrast
-opt.association.Handedness.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
-opt.association.Handedness.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
-opt.association.Handedness.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
-
-# Visualization
-opt.association.Handedness.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
+    # Visualization
+    opt.association.Endurance_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
 
 
-## BMI Association test
-# GLM options
-opt.association.BMI.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
-opt.association.BMI.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
-opt.association.BMI.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
-opt.association.BMI.flag_intercept = true;                % turn on/off adding a constant covariate to the model
+    ## GaitSpeed Association test
+    # GLM options
+    opt.association.GaitSpeed_Comp.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
+    opt.association.GaitSpeed_Comp.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
+    opt.association.GaitSpeed_Comp.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
+    opt.association.GaitSpeed_Comp.flag_intercept = true;                % turn on/off adding a constant covariate to the model
 
-# Test a main effect of  BMIfactors
-opt.association.BMI.contrast.BMI = 1;    % scalar number for the weight of the variable in the contrast
-opt.association.BMI.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
-opt.association.BMI.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
-opt.association.BMI.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+    # Test a main effect of  GaitSpeed_Compfactors
+    opt.association.GaitSpeed_Comp.contrast.GaitSpeed_Comp = 1;    % scalar number for the weight of the variable in the contrast
+    opt.association.GaitSpeed_Comp.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.GaitSpeed_Comp.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.GaitSpeed_Comp.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
 
-# Visualization
-opt.association.BMI.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
-
-
-## Taste_Unadj Association test
-# GLM options
-opt.association.Taste_Unadj.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
-opt.association.Taste_Unadj.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
-opt.association.Taste_Unadj.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
-opt.association.Taste_Unadj.flag_intercept = true;                % turn on/off adding a constant covariate to the model
-
-# Test a main effect of  Taste_Unadjfactors
-opt.association.Taste_Unadj.contrast.Taste_Unadj = 1;    % scalar number for the weight of the variable in the contrast
-opt.association.Taste_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
-opt.association.Taste_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
-opt.association.Taste_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
-
-# Visualization
-opt.association.Taste_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
+    # Visualization
+    opt.association.GaitSpeed_Comp.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
 
 
-## Odor_Unadj Association test
-# GLM options
-opt.association.Odor_Unadj.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
-opt.association.Odor_Unadj.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
-opt.association.Odor_Unadj.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
-opt.association.Odor_Unadj.flag_intercept = true;                % turn on/off adding a constant covariate to the model
 
-# Test a main effect of  Odor_Unadjfactors
-opt.association.Odor_Unadj.contrast.Odor_Unadj = 1;    % scalar number for the weight of the variable in the contrast
-opt.association.Odor_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
-opt.association.Odor_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
-opt.association.Odor_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+    ## Handedness Association test
+    # GLM options
+    opt.association.Handedness.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
+    opt.association.Handedness.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
+    opt.association.Handedness.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
+    opt.association.Handedness.flag_intercept = true;                % turn on/off adding a constant covariate to the model
 
-# Visualization
-opt.association.Odor_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
+    # Test a main effect of  Handednessfactors
+    opt.association.Handedness.contrast.Handedness = 1;    % scalar number for the weight of the variable in the contrast
+    opt.association.Handedness.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.Handedness.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.Handedness.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+
+    # Visualization
+    opt.association.Handedness.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
 
 
-## PainInterf_Tscore Association test
-# GLM options
-opt.association.PainInterf_Tscore.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
-opt.association.PainInterf_Tscore.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
-opt.association.PainInterf_Tscore.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
-opt.association.PainInterf_Tscore.flag_intercept = true;                % turn on/off adding a constant covariate to the model
+    ## BMI Association test
+    # GLM options
+    opt.association.BMI.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
+    opt.association.BMI.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
+    opt.association.BMI.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
+    opt.association.BMI.flag_intercept = true;                % turn on/off adding a constant covariate to the model
 
-# Test a main effect of  PainInterf_Tscorefactors
-opt.association.PainInterf_Tscore.contrast.PainInterf_Tscore = 1;    % scalar number for the weight of the variable in the contrast
-opt.association.PainInterf_Tscore.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
-opt.association.PainInterf_Tscore.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
-opt.association.PainInterf_Tscore.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+    # Test a main effect of  BMIfactors
+    opt.association.BMI.contrast.BMI = 1;    % scalar number for the weight of the variable in the contrast
+    opt.association.BMI.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.BMI.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.BMI.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
 
-# Visualization
-opt.association.PainInterf_Tscore.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
+    # Visualization
+    opt.association.BMI.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
 
-##### Run the pipeline  #####
-opt.flag_test =false ;  % Put this flag to true to just generate the pipeline without running it.
-pipeline = niak_pipeline_subtype(files_in,opt);
 
-## Extra
-% make a copy of this script to output folder
-system(['cp ' mfilename('fullpath') '.m ' opt.folder_out '.']);
+    ## Taste_Unadj Association test
+    # GLM options
+    opt.association.Taste_Unadj.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
+    opt.association.Taste_Unadj.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
+    opt.association.Taste_Unadj.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
+    opt.association.Taste_Unadj.flag_intercept = true;                % turn on/off adding a constant covariate to the model
+
+    # Test a main effect of  Taste_Unadjfactors
+    opt.association.Taste_Unadj.contrast.Taste_Unadj = 1;    % scalar number for the weight of the variable in the contrast
+    opt.association.Taste_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.Taste_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.Taste_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+
+    # Visualization
+    opt.association.Taste_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
+
+
+    ## Odor_Unadj Association test
+    # GLM options
+    opt.association.Odor_Unadj.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
+    opt.association.Odor_Unadj.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
+    opt.association.Odor_Unadj.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
+    opt.association.Odor_Unadj.flag_intercept = true;                % turn on/off adding a constant covariate to the model
+
+    # Test a main effect of  Odor_Unadjfactors
+    opt.association.Odor_Unadj.contrast.Odor_Unadj = 1;    % scalar number for the weight of the variable in the contrast
+    opt.association.Odor_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.Odor_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.Odor_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+
+    # Visualization
+    opt.association.Odor_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
+
+
+    ## PainInterf_Tscore Association test
+    # GLM options
+    opt.association.PainInterf_Tscore.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
+    opt.association.PainInterf_Tscore.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
+    opt.association.PainInterf_Tscore.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
+    opt.association.PainInterf_Tscore.flag_intercept = true;                % turn on/off adding a constant covariate to the model
+
+    # Test a main effect of  PainInterf_Tscorefactors
+    opt.association.PainInterf_Tscore.contrast.PainInterf_Tscore = 1;    % scalar number for the weight of the variable in the contrast
+    opt.association.PainInterf_Tscore.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.PainInterf_Tscore.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.PainInterf_Tscore.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+
+    # Visualization
+    opt.association.PainInterf_Tscore.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
+
+    ##### Run the pipeline  #####
+    opt.flag_test =false ;  % Put this flag to true to just generate the pipeline without running it.
+    pipeline = niak_pipeline_subtype(files_in,opt);
+
+    ## Extra
+    % make a copy of this script to output folder
+    system(['cp ' mfilename('fullpath') '.m ' opt.folder_out '.']);
+end

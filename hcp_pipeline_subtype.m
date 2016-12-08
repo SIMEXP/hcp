@@ -151,7 +151,7 @@ tab_model_clean = str2double(model_clean(2:end,2:end));
 
 # save final model file
 opt_csv.labels_x = list_id; # Labels for the rows
-opt_csv.labels_y = labels_y(2:end);
+opt_csv.labels_y = model_clean(1,2:end);
 path_model_final = [path_root 'pheno/model_motor_RL.csv'];
 niak_write_csv(path_model_final,tab_model_clean,opt_csv);
 
@@ -167,7 +167,7 @@ files_in.model = path_model_final;
 opt.stack.regress_conf = {'FD_scrubbed'};     % a list of varaible names to be regressed out
 
 # Subtyping
-list_subtype = {3 5 6 7 10  15 20};
+list_subtype = {3 5 6 7 10 15 20};
 for ll = 1: length(list_subtype)
     opt.subtype.nb_subtype = list_subtype{ll};       % the number of subtypes to extract
     opt.subtype.sub_map_type = 'mean';        % the model for the subtype maps (options are 'mean' or 'median')
@@ -333,5 +333,5 @@ for ll = 1: length(list_subtype)
 
     ## Extra
     % make a copy of this script to output folder
-    system(['cp ' mfilename('fullpath') '.m ' opt.folder_out '.']);
+    system(['cp ' mfilename('fullpath') '.m ' opt.folder_out '/.']);
 end

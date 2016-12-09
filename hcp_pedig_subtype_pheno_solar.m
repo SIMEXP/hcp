@@ -1,48 +1,33 @@
 % A non generic script to prepare pedigree and pheno variable for solar eclipse
 
-% load variales 
+% load variables 
 path_root = '/home/yassinebha/Drive/HCP/subtypes_scores/26-10-2016/';
 path_subtype = [path_root 'subtype_MOTOR_RL_20161202/'];
 subt_weight = load([path_subtype 'subtype_weights.mat']);
 pheno_mot_rl  = niak_read_csv_cell([path_root 'pheno/motor_RL_pheno_scrub_raw.csv']);
 
-%% Select pheno of interest 
-list_pheno  = {'BMI','FD','FD_scrubbed'};
+##################################
+####### Build pheno file #########
+##################################
+
+%% Select a subset variable of interest including subject ID's
+list_pheno  = {'Subject','Age_in_Yrs','Gender','Handedness','BMI','FD','FD_scrubbed'};
 mask_pheno  = ismember(pheno_mot_rl(1,:),list_pheno);
 pheno_mot_rl_subset = pheno_mot_rl(:,mask_pheno);
 
-# recode gender to M=1 F=2
-index = strfind(merge_pheno_scrub(1,:),'Gender');
-index = find(~cellfun(@isempty,index));
-merge_pheno_scrub(:,index) = strrep (merge_pheno_scrub(:,index),'M','1');
-merge_pheno_scrub(:,index) = strrep (merge_pheno_scrub(:,index),'F','2');
+%% Merge pheno with weight_mat 
+cell_subt_weight = num2cell(subt_weight.weight_mat);
+% Reshape 3d weigth to 2D
+cell_subt_weight_2d = reshape(cell_subt_weight,length(cell_subt_weight),size(cell_subt_weight)(2)*size(cell_subt_weight)(3));
+% Concatenate ID'S with Weight
+cell_subt_weight_ID_2d = [ subt_weight.list_subject cell_subt_weight_2d ];
+% Merge weight with pheno cell 
+pheno_weight_merge = merge_cell_tab(cell_subt_weight_ID_2d,pheno_mot_rl_subset);
 
+#################################
+######Build pedigree table#######
+#################################
 
-% Add sex to pheno table
-subt_weight(:,1)=[]; % Remove index colomn
-pheno_sex = [pheno_unrestrict(:,1) pheno_unrestrict(:,4)];% Select only ID and Gender column 
-pheno_sex = strrep(pheno_sex,'M','1'); % Change M for 1
-pheno_sex = strrep(pheno_sex,'F','2'); % Change F for 2
-concat_weight_sex = combine_cell_tab(subt_weight,pheno_sex);
-
-%Add FD and FD scrubbed to concat_weight_sex
-scrub_FD = [scrub(:,1) scrub(:,4) scrub(:,5)]; % Select IDs, FD and FD scrubbed
-scrub_FD_header = scrub_FD(1,:); %grab the header
-index = strfind(scrub_FD(:,1),'motLR'); % find index matching the task name
-index = find(~cellfun(@isempty,index)); % select only matching index
-scrub_FD_clean = scrub_FD(index,:); % keep only matching task name
-for ii = 1:length(scrub_FD_clean)
-    scrub_FD_clean(ii,1)=scrub_FD_clean{ii,1}(4:end-12); %keep only subject name in the ID
-end
-scrub_FD_clean = [scrub_FD_header ; scrub_FD_clean]; %put back the header
-concat_weight_sex_FD = combine_cell_tab(concat_weight_sex,scrub_FD_clean);
-
-%Build and save pheno Table
-phenotype = [concat_weight_sex_FD(:,1) concat_weight_sex_FD(:,5) concat_weight_sex_FD(:,43) concat_weight_sex_FD(:,6) concat_weight_sex_FD(:,45:46) concat_weight_sex_FD(:,7:41)]; %select specific pheno
-phenotype(1,1)= 'ID'; % Change Subject for ID in the header
-%phenotype(cellfun(@(x) any(isnan(x)),phenotype))=[]; %remove NaN
-%niak_write_csv_cell('/home/yassinebha/Google_Drive/HCP/Solar_heritability/test_pheno.csv',concat_weight_sex_FD);
-niak_write_csv_cell('/home/yassinebha/Google_Drive/HCP/Solar_heritability/phenotypes.csv',phenotype);
 
 % Build pedigree table
 pedigree = [concat_weight_sex_FD(:,1) concat_weight_sex_FD(:,4) concat_weight_sex_FD(:,4) concat_weight_sex_FD(:,43) concat_weight_sex_FD(:,2) concat_weight_sex_FD(:,4)];

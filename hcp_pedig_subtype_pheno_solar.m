@@ -1,11 +1,22 @@
+% A non generic script to prepare pedigree and pheno variable for solar eclipse
 
-% A non generic script to prepare pedigree and pheno variable for solar eclipse.
-% This script will be translated to python for next analysis, and will be coded as 
-% generic script for all HCP tasks and rest
+% load variales 
 path_root = '/home/yassinebha/Drive/HCP/subtypes_scores/26-10-2016/';
 path_subtype = [path_root 'subtype_MOTOR_RL_20161202/'];
 subt_weight = load([path_subtype 'subtype_weights.mat']);
 pheno_mot_rl  = niak_read_csv_cell([path_root 'pheno/motor_RL_pheno_scrub_raw.csv']);
+
+%% Select pheno of interest 
+list_pheno  = {'BMI','FD','FD_scrubbed'};
+mask_pheno  = ismember(pheno_mot_rl(1,:),list_pheno);
+pheno_mot_rl_subset = pheno_mot_rl(:,mask_pheno);
+
+# recode gender to M=1 F=2
+index = strfind(merge_pheno_scrub(1,:),'Gender');
+index = find(~cellfun(@isempty,index));
+merge_pheno_scrub(:,index) = strrep (merge_pheno_scrub(:,index),'M','1');
+merge_pheno_scrub(:,index) = strrep (merge_pheno_scrub(:,index),'F','2');
+
 
 % Add sex to pheno table
 subt_weight(:,1)=[]; % Remove index colomn

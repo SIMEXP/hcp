@@ -71,7 +71,7 @@ pheno_clean = pheno_raw(:,mask_pheno);
 pheno_clean = [pheno_raw(:,ismember(pheno_raw(1,:),'Subject'))(:,1) pheno_clean];
 
 ## Grab connectivity maps
-path_connectome = [path_root 'connectome_MOTOR_20161203/'];
+path_connectome = [path_root 'connectome_MOTOR_20161129/'];
 files_conn = niak_grab_connectome(path_connectome);
 files_in.data = files_conn.rmap;
 
@@ -164,16 +164,16 @@ files_in.mask = files_conn.network_rois;
 files_in.model = path_model_final;
 
 # Confound regression
-opt.stack.regress_conf = {'FD_scrubbed'};     % a list of varaible names to be regressed out
+opt.stack.regress_conf = {'Age_in_Yrs'};     % a list of varaible names to be regressed out
 
 # Subtyping
-list_subtype = {3 5 6 7 10 15 20};
+list_subtype = {5};
 for ll = 1: length(list_subtype)
     opt.subtype.nb_subtype = list_subtype{ll};       % the number of subtypes to extract
     opt.subtype.sub_map_type = 'mean';        % the model for the subtype maps (options are 'mean' or 'median')
 
     # General
-    opt.folder_out = [path_root 'subtype_' num2str(opt.subtype.nb_subtype) '_MOTOR_RL_' date];
+    opt.folder_out = [path_root 'subtype_' num2str(opt.subtype.nb_subtype) '_CovAge_MOTOR_RL_' date];
 
     ## Dexterity Association test
     # GLM options
@@ -184,9 +184,8 @@ for ll = 1: length(list_subtype)
 
     # Test a main effect of  Dexterity_Unadjfactors
     opt.association.Dexterity_Unadj.contrast.Dexterity_Unadj = 1;    % scalar number for the weight of the variable in the contrast
-    opt.association.Dexterity_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.Dexterity_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.Dexterity_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.Dexterity_Unadj.contrast.Gender = 0;
+    opt.association.Dexterity_Unadj.contrast.FD_scrubbed= 0;
 
     # Visualization
     opt.association.Dexterity_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
@@ -200,9 +199,8 @@ for ll = 1: length(list_subtype)
 
     # Test a main effect of  Strength_Unadjfactors
     opt.association.Strength_Unadj.contrast.Strength_Unadj = 1;    % scalar number for the weight of the variable in the contrast
-    opt.association.Strength_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.Strength_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.Strength_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.Strength_Unadj.contrast.Gender = 0;
+    opt.association.Strength_Unadj.contrast.FD_scrubbed= 0;
 
     # Visualization
     opt.association.Strength_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
@@ -217,10 +215,9 @@ for ll = 1: length(list_subtype)
 
     # Test a main effect of  Endurance_Unadjfactors
     opt.association.Endurance_Unadj.contrast.Endurance_Unadj = 1;    % scalar number for the weight of the variable in the contrast
-    opt.association.Endurance_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.Endurance_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.Endurance_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
-
+    opt.association.Endurance_Unadj.contrast.Gender = 0;
+    opt.association.Endurance_Unadj.contrast.FD_scrubbed= 0;
+    
     # Visualization
     opt.association.Endurance_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
 
@@ -234,10 +231,10 @@ for ll = 1: length(list_subtype)
 
     # Test a main effect of  GaitSpeed_Compfactors
     opt.association.GaitSpeed_Comp.contrast.GaitSpeed_Comp = 1;    % scalar number for the weight of the variable in the contrast
-    opt.association.GaitSpeed_Comp.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.GaitSpeed_Comp.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.GaitSpeed_Comp.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
-
+    opt.association.GaitSpeed_Comp.contrast.Odor_Unadj = 0;    % scalar number for the weight of the variable in the contrast
+    opt.association.GaitSpeed_Comp.contrast.Gender = 0;
+    opt.association.GaitSpeed_Comp.contrast.FD_scrubbed= 0;
+    
     # Visualization
     opt.association.GaitSpeed_Comp.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
 
@@ -250,11 +247,11 @@ for ll = 1: length(list_subtype)
     opt.association.Handedness.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
     opt.association.Handedness.flag_intercept = true;                % turn on/off adding a constant covariate to the model
 
-    # Test a main effect of  Handednessfactors
+    # Test a main effect of  Handedness factors
     opt.association.Handedness.contrast.Handedness = 1;    % scalar number for the weight of the variable in the contrast
-    opt.association.Handedness.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.Handedness.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.Handedness.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.Handedness.contrast.Odor_Unadj = 0;    % scalar number for the weight of the variable in the contrast
+    opt.association.Handedness.contrast.Gender = 0;
+    opt.association.Handedness.contrast.FD_scrubbed= 0;
 
     # Visualization
     opt.association.Handedness.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
@@ -269,9 +266,9 @@ for ll = 1: length(list_subtype)
 
     # Test a main effect of  BMIfactors
     opt.association.BMI.contrast.BMI = 1;    % scalar number for the weight of the variable in the contrast
-    opt.association.BMI.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.BMI.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.BMI.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.BMI.contrast.Odor_Unadj = 0;    % scalar number for the weight of the variable in the contrast
+    opt.association.BMI.contrast.Gender = 0;
+    opt.association.BMI.contrast.FD_scrubbed= 0;
 
     # Visualization
     opt.association.BMI.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
@@ -286,9 +283,8 @@ for ll = 1: length(list_subtype)
 
     # Test a main effect of  Taste_Unadjfactors
     opt.association.Taste_Unadj.contrast.Taste_Unadj = 1;    % scalar number for the weight of the variable in the contrast
-    opt.association.Taste_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.Taste_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.Taste_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.Taste_Unadj.contrast.Gender = 0;
+    opt.association.Taste_Unadj.contrast.FD_scrubbed= 0;
 
     # Visualization
     opt.association.Taste_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
@@ -303,9 +299,8 @@ for ll = 1: length(list_subtype)
 
     # Test a main effect of  Odor_Unadjfactors
     opt.association.Odor_Unadj.contrast.Odor_Unadj = 1;    % scalar number for the weight of the variable in the contrast
-    opt.association.Odor_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.Odor_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.Odor_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.Odor_Unadj.contrast.FD_scrubbed = 0;    % scalar number for the weight of the variable in the contrast
+    opt.association.Odor_Unadj.contrast.Gender = 0;
 
     # Visualization
     opt.association.Odor_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
@@ -320,9 +315,8 @@ for ll = 1: length(list_subtype)
 
     # Test a main effect of  PainInterf_Tscorefactors
     opt.association.PainInterf_Tscore.contrast.PainInterf_Tscore = 1;    % scalar number for the weight of the variable in the contrast
-    opt.association.PainInterf_Tscore.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.PainInterf_Tscore.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.PainInterf_Tscore.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.PainInterf_Tscore.contrast.Gender = 0;
+    opt.association.PainInterf_Tscore.contrast.FD_scrubbed= 0;
 
     # Visualization
     opt.association.PainInterf_Tscore.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
@@ -338,14 +332,47 @@ for ll = 1: length(list_subtype)
     # Test a main effect of  FD_scrubbed factors
     opt.association.FD_scrubbed.contrast.FD_scrubbed = 1;    % scalar number for the weight of the variable in the contrast
     opt.association.FD_scrubbed.contrast.BMI = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.FD_scrubbed.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.FD_scrubbed.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.FD_scrubbed.contrast.Endurance_Unadj = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.FD_scrubbed.contrast.Gender = 0;
+    opt.association.FD_scrubbed.contrast.Endurance_Unadj= 0;
 
     # Visualization
     opt.association.FD_scrubbed.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
     
     
+    ## Gender Association test
+    # GLM options
+    opt.association.Gender.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
+    opt.association.Gender.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
+    opt.association.Gender.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
+    opt.association.Gender.flag_intercept = true;                % turn on/off adding a constant covariate to the model
+
+    # Test a main effect of  Gender factors
+    opt.association.Gender.contrast.Gender = 1;    % scalar number for the weight of the variable in the contrast
+    opt.association.Gender.contrast.FD_scrubbed= 0;
+
+    # Visualization
+    opt.association.Gender.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
+    
+    
+    ## Age_in_Yrs Association test
+    # GLM options
+   # opt.association.Age_in_Yrs.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
+   # opt.association.Age_in_Yrs.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
+   # opt.association.Age_in_Yrs.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
+   # opt.association.Age_in_Yrs.flag_intercept = true;                % turn on/off adding a constant covariate to the model
+
+    # Test a main effect of  Age_in_Yrs factors
+   # opt.association.Age_in_Yrs.contrast.Age_in_Yrs = 1;    % scalar number for the weight of the variable in the contrast
+   # opt.association.Age_in_Yrs.contrast.Gender = 0;
+   # opt.association.Age_in_Yrs.contrast.FD_scrubbed= 0;
+
+    # Visualization
+   # opt.association.Age_in_Yrs.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
+
+
+
+
+
     ##### Run the pipeline  #####
     opt.flag_test =false ;  % Put this flag to true to just generate the pipeline without running it.
     pipeline = niak_pipeline_subtype(files_in,opt);

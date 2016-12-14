@@ -43,20 +43,10 @@ in = psom_struct_defaults( in , ...
     { 'fmri' , 'onset'}, ...
     {  NaN    , NaN });
 
-% Outputs
-if (nargin < 2) || isempty(out)
-    out = pwd;
-end
-folder_out = niak_full_path(out);
-
+%% Options
 opt = psom_struct_defaults ( opt , ...
   {  'glm_test' , 'flag_test' }, ...
   {  'ttest'    , false         });
-
-if opt.flag_test
-    return
-end
-
 
 %% Red the onset file
 file_onset = in.onset;
@@ -65,6 +55,19 @@ file_onset = in.onset;
 %% Reorganize the onsets using numerical IDs for the conditions
 [list_event,tmp,all_event]  = unique(lx);
 opt_m.events = [all_event(:) tab];
+
+%% Outputs
+if (nargin < 2) || isempty(out) || isempty(fieldnames(out))
+    out = struct;
+    for ee = 1:length(list_event)
+        out.(list_event{ee}) = [folder_out filesep 'spm_' list_event{ee} '.mnc.gz'];
+    end
+end
+
+%% If it's a test, just finish here
+if opt.flag_test
+    return
+end
 
 %% Now read an fMRI dataset
 [hdr,vol] = niak_read_vol(in.fmri);

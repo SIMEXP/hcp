@@ -4,10 +4,10 @@ function [in,out,opt] = hcp_brick_fmridesign(in,out,opt)
 % SYNTAX: [IN,OUT,OPT] = HCP_BRICK_FMRIDESIGN(IN,OUT,OPT)
 %
 % IN.FMRI (string) the file name of a 4D volume
+
+% IN.ONSET (string, default '') a csv onset file
 %
 % OUT (string, default [pwd]) The full path for output file map.
-%
-% OPT.ONSET (string, default '') a csv onset file
 %
 % OPT.GLM_TEST (string, default 'ttest') The type of glm test to implement.
 %
@@ -40,8 +40,8 @@ function [in,out,opt] = hcp_brick_fmridesign(in,out,opt)
 
 %% Defaults
 in = psom_struct_defaults( in , ...
-    { 'fmri' }, ...
-    { ''     });
+    { 'fmri' , 'onset'}, ...
+    {  NaN    , NaN });
 
 % Outputs
 if (nargin < 2) || isempty(out)
@@ -49,8 +49,8 @@ if (nargin < 2) || isempty(out)
 end
 
 opt = psom_struct_defaults ( opt , ...
-  { 'onset' , 'glm_test' , 'flag_test' }, ...
-  { ''      , 'ttest'    , false         });
+  {  'glm_test' , 'flag_test' }, ...
+  {  'ttest'    , false         });
 
 if opt.flag_test
     return
@@ -58,7 +58,7 @@ end
 
 
 %% Red the onset file
-file_onset = opt.onset;
+file_onset = in.onset;
 [tab,lx,ly] = niak_read_csv(file_onset);
 
 %% Reorganize the onsets using numerical IDs for the conditions
@@ -83,7 +83,7 @@ glm.x = glm.x(~hdr.extra.mask_scrubbing,:);
 
 %% Loop on the maps
 opt_glm = struct;
-opt_glm.test = 'ttest';
+opt_glm.test = opt.glm_test;
 opt_glm.flag_rsquare = true;
 
 for ee = 1:length(list_event)

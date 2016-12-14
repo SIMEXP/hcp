@@ -73,26 +73,14 @@ opt.psom.path_logs = [folder_out 'logs' filesep];
 for num_s = 1:length(list_subject)
     clear in out jopt
     subject = list_subject{num_s};
-    name_job = sprintf('connectome_%s',subject);
-    in.fmri = files_tseries.(subject);
-    in.mask = pipeline.(['mask_' network]).files_out;
-    out = [folder_out 'connectomes' filesep 'connectome_' network '_' subject '.mat'];
-    jopt = opt.connectome;
-    pipeline = psom_add_job(pipeline,name_job,'niak_brick_connectome',in,out,jopt);
+    name_job = sprintf('fmridesign_%s',subject);
+    in.fmri = files_tseries{num_snum_s};
+    in.onset = files_in.onset;
+    out = [folder_out 'spm_maps'];
+    jopt.fmridesign = opt.fmridesign;
+    jopt.psom = opt.psom;
+    pipeline = psom_add_job(pipeline,name_job,'niak_brick_fmridesign',in,out,jopt);
 end
-
-%% Compute the average map for each seed
-for num_seed = 1:length(labels_seed)
-    seed = labels_seed{num_seed};
-    clear in out jopt
-    in = list_maps(:,num_seed);
-    out = [folder_out 'rmap_seeds' filesep 'average_rmap_' seed ext_f];
-    jopt.operation = 'vol = zeros(size(vol_in{1})); for num_m = 1:length(vol_in), vol = vol + vol_in{num_m}; end, vol = vol / length(vol_in);';
-    pipeline = psom_add_job(pipeline,['average_rmap_' seed],'niak_brick_math_vol',in,out,jopt);
-end
-
-
-
 
 %% Run the pipeline
 if ~opt.flag_test

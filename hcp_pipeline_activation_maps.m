@@ -78,10 +78,8 @@ for num_s = 1:length(list_subject)
     name_job = sprintf('spm_%s',subject);
     in.fmri = files_tseries.(subject){1};
     in.onset = files_in.onset;
-    out = [folder_out 'spm_maps' filesep subject];
-    jopt.fmridesign = opt.fmridesign;
-    jopt.psom = opt.psom;
-    pipeline = psom_add_job(pipeline,name_job,'hcp_brick_fmridesign',in,out,jopt);
+    jopt.folder_out = [folder_out 'spm_maps' filesep subject];
+    pipeline = psom_add_job(pipeline,name_job,'hcp_brick_fmridesign',in,struct,jopt);
 end
 
 %% Run the pipeline

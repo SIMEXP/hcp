@@ -45,11 +45,15 @@ in = psom_struct_defaults( in , ...
 
 %% Options
 opt = psom_struct_defaults ( opt , ...
-  {  'glm_test' , 'flag_test' }, ...
-  {  'ttest'    , false         });
+  {  'folder_out' , 'glm_test' , 'flag_verbose' , 'flag_test' }, ...
+  {  pwd          , 'ttest'    , true           , false         });
+folder_out = niak_full_path(opt.folder_out);
 
 %% Red the onset file
 file_onset = in.onset;
+if opt.flag_verbose
+    fprintf('Read the onset file %s ...\n',file_onset);
+end
 [tab,lx,ly] = niak_read_csv(file_onset);
 
 %% Reorganize the onsets using numerical IDs for the conditions
@@ -70,6 +74,9 @@ if opt.flag_test
 end
 
 %% Now read an fMRI dataset
+if opt.flag_verbose
+    fprintf('Read an fMRI volume %s...\n',in.fmri)
+end
 [hdr,vol] = niak_read_vol(in.fmri);
 mask = niak_mask_brain(vol);
 glm.y = niak_vol2tseries(vol,mask);
@@ -77,6 +84,9 @@ glm.y = glm.y(~hdr.extra.mask_scrubbing,:);
 glm.y = niak_normalize_tseries(glm.y,'perc');
 
 %% Build the model
+if opt.flag_verbose
+    fprintf('Generate the model...\n')
+end
 opt_m.frame_times = hdr.extra.time_frames;
 x_cache =  niak_fmridesign(opt_m);
 glm.x = ones(size(vol,4),1);
@@ -86,6 +96,9 @@ end
 glm.x = glm.x(~hdr.extra.mask_scrubbing,:);
 
 %% Loop on the maps
+if opt.flag_verbose
+    fprintf('Estimate the model and save the maps...\n')
+end
 opt_glm = struct;
 opt_glm.test = opt.glm_test;
 opt_glm.flag_rsquare = true;
@@ -98,6 +111,9 @@ for ee = 1:length(list_event)
     %% Run the GLM
     res = niak_glm(glm,opt_glm);
     %niak_montage (niak_tseries2vol(res.ftest(:)',mask),opt_v)
-    hdr.file_name = [folder_out filesep 'spm_' list_event{ee} '.mnc.gz'];
+    hdr.file_name = out.(list_event{ee});
+    if opt.flag_verbose
+       fprintf('    %s\n',out.(list_event{ee}))
+    end
     niak_write_vol(hdr,niak_tseries2vol(res.eff(:)',mask));
 end

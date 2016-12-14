@@ -47,6 +47,7 @@ in = psom_struct_defaults( in , ...
 if (nargin < 2) || isempty(out)
     out = pwd;
 end
+folder_out = niak_full_path(out);
 
 opt = psom_struct_defaults ( opt , ...
   {  'glm_test' , 'flag_test' }, ...
@@ -94,6 +95,6 @@ for ee = 1:length(list_event)
     %% Run the GLM
     res = niak_glm(glm,opt_glm);
     %niak_montage (niak_tseries2vol(res.ftest(:)',mask),opt_v)
-    hdr.file_name = [out filesep 'spm_' list_event{ee} '.mnc.gz'];
+    hdr.file_name = [folder_out filesep 'spm_' list_event{ee} '.mnc.gz'];
     niak_write_vol(hdr,niak_tseries2vol(res.eff(:)',mask));
 end

@@ -70,16 +70,18 @@ opt.psom.path_logs = [folder_out 'logs' filesep];
 % Re-organize inputs
 [files_tseries,list_subject] = sub_input(files_in);
 
+%loop over subject and create spm maps jobs
+pipeline = struct();
 for num_s = 1:length(list_subject)
     clear in out jopt
     subject = list_subject{num_s};
-    name_job = sprintf('fmridesign_%s',subject);
-    in.fmri = files_tseries{num_snum_s};
+    name_job = sprintf('spm_%s',subject);
+    in.fmri = files_tseries.(subject){1};
     in.onset = files_in.onset;
     out = [folder_out 'spm_maps'];
     jopt.fmridesign = opt.fmridesign;
     jopt.psom = opt.psom;
-    pipeline = psom_add_job(pipeline,name_job,'niak_brick_fmridesign',in,out,jopt);
+    pipeline = psom_add_job(pipeline,name_job,'hcp_brick_fmridesign',in,out,jopt);
 end
 
 %% Run the pipeline

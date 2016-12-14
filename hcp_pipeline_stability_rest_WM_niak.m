@@ -83,8 +83,8 @@ opt.folder_out = '/gs/project/gsf-624-aa/HCP/basc_WM_rl-lr_niak-fix-scrub_900R/'
 opt.region_growing.thre_size = 1000; %  the size of the regions, when they stop growing. A threshold of 1000 mm3 will give about 1000 regions on the grey matter. 
 opt.grid_scales = [10:10:100 120:20:200 240:40:500]'; % Search for stable clusters in the range 10 to 500 
 % use mstep sacle if exist or leave it empty
-%mstep_file = [ opt.folder_out filesep 'stability_group/msteps_group.mat']; 
-mstep_file = '';%temporarly run only scale 7 
+mstep_file = [ opt.folder_out filesep 'stability_group/msteps_group.mat']; 
+%mstep_file = '';%temporarly run only scale 7 
 if psom_exist(mstep_file)
    warning ('The file %s exist, I will use MSTEP scale',mstep_file);
    load (mstep_file);

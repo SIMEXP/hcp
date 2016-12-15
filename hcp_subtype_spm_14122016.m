@@ -83,6 +83,7 @@ for num_s = 1:length(list_subject)
     mask_id = ismember(pheno_clean(2:end,1),subject(4:end));
     if sum(mask_id) == 0
        warning(sprintf('subject %s has no entry in the csv model',subject))
+       num_s
        continue
     elseif  sum(mask_id) == 1
        mask_id_stack = mask_id_stack + mask_id;
@@ -159,6 +160,16 @@ niak_write_csv(path_model_final,tab_model_clean,opt_csv);
 
 # Brain mask
 files_in.mask = files_spm.roi_mask;
+
+% Resample the mask
+in_mask.source = files_spm.roi_mask;
+trial_tmp = fieldnames(files_spm.spm_map){1};
+subj_tmp = fieldnames(files_spm.spm_map.(trial_tmp)){1};
+in_mask.target = files_spm.spm_map.(trial_tmp).(subj_tmp);
+out_mask = [path_spm filesep 'mask_roi_resample.mnc.gz'];
+opt_mask.interpolation = 'nearest_neighbour';
+niak_brick_resample_vol(in_mask,out_mask,opt_mask);
+files_in.mask = out_mask;
 
 # Model
 files_in.model = path_model_final;

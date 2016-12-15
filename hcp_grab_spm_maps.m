@@ -56,7 +56,7 @@ if (nargin<1)||isempty(path_data)
 end
 
 if nargin<2
-    files_in = struct();
+    files = struct();
 end
 
 path_data = niak_full_path(path_data);
@@ -65,13 +65,12 @@ path_data = niak_full_path(path_data);
 list_subject = dir([path_data 'spm_maps']);
 list_subject = {list_subject.name};
 list_subject = list_subject(~ismember(list_subject,{'.','..','logs_conversion'}));
-files = struct;
 
 %% Grab SPM-maps
 path_spm = [path_data 'spm_maps'];
 if psom_exist(path_spm)
     % Parse trial IDs
-    list_trial = dir([path_spm filesep file_trial_tmp(1).name ]);
+    list_trial = dir([path_spm filesep list_subject{1} ]);
     list_trial = {list_trial.name};
     list_trial = list_trial(~ismember(list_trial,{'.','..','logs_conversion'}));
     for ff = 1:length(list_trial)
@@ -80,8 +79,10 @@ if psom_exist(path_spm)
         for ss = 1:length(list_subject)
             files.spm_map.(name_trial).(list_subject{ss}) = [path_spm filesep list_subject{ss} filesep 'spm_' name_trial ext_trial];
         end
-        files.mask.(name_trial) = [gb_niak_path_template filesep 'roi_aal' ext_trial];
     end
 else
     warning ('I could not find the spm_maps subfolder')
 end
+
+% Grab the roi mask
+files.roi_mask = [gb_niak_path_template filesep 'roi_aal' ext_trial];

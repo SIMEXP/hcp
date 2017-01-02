@@ -111,7 +111,7 @@ scrub_clean = scrub_raw(:,mask_scrub);
 scrub_clean_header = scrub_clean(1,:);
 
 # find index matching the task name
-index = strfind(scrub_clean(:,1),'lanRL');
+index = strfind(scrub_clean(:,1),'langRL');
 
 # select only matching index
 index = find(~cellfun(@isempty,index));
@@ -119,7 +119,7 @@ index = find(~cellfun(@isempty,index));
 # keep only matching task name
 scrub_clean_final = scrub_clean(index,:);
 for ii = 1:length(scrub_clean_final)
-    scrub_clean_final(ii,1)=scrub_clean_final{ii,1}(4:end-12);
+    scrub_clean_final(ii,1)=scrub_clean_final{ii,1}(4:end-13);
 end
 
 # put back the header
@@ -144,7 +144,7 @@ merge_pheno_scrub(:,index) = strrep (merge_pheno_scrub(:,index),'F','2');
 
 # convert the values into a series of numerical covariates
 list_id = merge_pheno_scrub(2:end,1);
-labels_y = {'Subject','Age_in_Yrs','Handedness','Gender','ReadEng_Unadj','PicVocab_Unadj','ListSort_Unadj','BMI'};
+labels_y = {'Subject','Age_in_Yrs','Handedness','Gender','ReadEng_Unadj','PicVocab_Unadj','ListSort_Unadj','BMI','FD_scrubbed'};
 mask_model  = ismember(merge_pheno_scrub(1,:),labels_y);
 model_clean = merge_pheno_scrub(:,mask_model);
 tab_model_clean = str2double(model_clean(2:end,2:end));

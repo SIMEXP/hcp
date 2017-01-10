@@ -35,5 +35,5 @@ for ss=1:length(list_subj)
     end
 end
 % set pipeline options
-opt.folder_out = [root_path 'activation_maps'];
+opt.folder_out = [root_path 'hcp_language_activation_maps_' date];
 [pipeline,opt] = hcp_pipeline_activation_maps(files_in,opt);

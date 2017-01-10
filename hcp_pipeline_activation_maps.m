@@ -76,11 +76,11 @@ for num_s = 1:length(list_subject)
     clear in out jopt
     subject = list_subject{num_s};
     list_session = fieldnames(files_tseries.(subject));
-    
+    % Session
     for num_sess = 1:length(list_session)
         session_name = list_session{num_sess};
         list_run = fieldnames(files_tseries.(subject).(session_name));
-        
+        % Run
         for num_run=1:length(list_run)
             run_name = list_run{num_run};
             name_job = sprintf('spm_%s_%s_%s',subject,session_name,run_name);

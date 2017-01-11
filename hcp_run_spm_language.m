@@ -3,8 +3,8 @@
 % Grab fmri files
 root_path = '/gs/project/gsf-624-aa/HCP/';
 opt_grab.type_files = 'roi';
-opt_grab.exclude_subject = {'HCP142626','HCP12802'};
-opt_grab.filter.run = {'motRL'};
+opt_grab.exclude_subject = {'HCP142626'};
+opt_grab.filter.run = {'langRL','langLR'};
 opt_grab.min_nb_vol = 100;
 files_grab = niak_grab_fmri_preprocess([root_path 'fmri_preprocess_all_tasks_niak-fix-scrub_900R'], opt_grab);
 files_in.fmri =  files_grab.fmri;

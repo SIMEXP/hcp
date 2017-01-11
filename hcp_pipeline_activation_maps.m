@@ -10,17 +10,17 @@ function [pipeline,opt] = hcp_pipeline_activation_maps(files_in,opt)
 % FILES_IN
 %   (structure) with the following fields :
 %
-%   FMRI.(SUBJECT).(SESSION).(RUN)
+%   FMRI.<SUBJECT>.<SESSION>.<RUN>
 %      (string) a 3D+t fMRI dataset. The fields <SUBJECT>, <SESSION> and <RUN> can be
 %      any arbitrary string.
 %
-%   ONSET
-%      (string, default 'gb_niak_omitted') the name of a .csv file with a list of
-%        onset. % The .csv FILES_IN.SEEDS should take this forms:
+%   ONSET.<SUBJECT>.<SESSION>.<RUN>
+%      (string, default 'gb_niak_omitted') a .csv file coding for the time of events.
+%        onset. Exemple:
 %
-%                   ,   start ,  duration ,  repetition
-%        TRIAL_1    ,  12 ,  7 , 1
-%        TRIAL_2    ,  45 , 3 , 2
+%                     , start , duration , repetition
+%        'TRIAL_1'    , 12    , 7        , 1
+%        'TRIAL_2'    , 45    , 3        , 2
 % OPT
 %   (structure) with the following fields :
 %
@@ -75,11 +75,21 @@ pipeline = struct();
 for num_s = 1:length(list_subject)
     clear in out jopt
     subject = list_subject{num_s};
-    name_job = sprintf('spm_%s',subject);
-    in.fmri = files_tseries.(subject){1};
-    in.onset = files_in.onset;
-    jopt.folder_out = [folder_out 'spm_maps' filesep subject];
-    pipeline = psom_add_job(pipeline,name_job,'hcp_brick_fmridesign',in,struct,jopt);
+    list_session = fieldnames(files_in.fmri.(subject));
+    % Session
+    for num_sess = 1:length(list_session)
+        session_name = list_session{num_sess};
+        list_run = fieldnames(files_in.fmri.(subject).(session_name));
+        % Run
+        for num_run=1:length(list_run)
+            run_name = list_run{num_run};
+            name_job = sprintf('spm_%s_%s_%s',subject,session_name,run_name);
+            in.fmri  = files_in.fmri.(subject).(session_name).(run_name);
+            in.onset = files_in.onset.(subject).(session_name).(run_name);
+            jopt.folder_out = [folder_out 'spm_maps' filesep subject filesep run_name ];
+            pipeline = psom_add_job(pipeline,name_job,'hcp_brick_fmridesign',in,struct,jopt);
+        end
+    end
 end
 
 %% Run the pipeline

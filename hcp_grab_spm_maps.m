@@ -1,8 +1,8 @@
-function files = hcp_grab_spm_maps(path_data)
+function files = hcp_grab_spm_maps(path_data,opt)
 % Grab the outputs of HCP_PIPELINE_ACTIVATION_MAPS
 %
 % SYNTAX:
-% FILES_OUT = HCP_GRAB_SPM_MAPS( PATH_DATA )
+% FILES_OUT = HCP_GRAB_SPM_MAPS( PATH_DATA, OPT )
 %
 % _________________________________________________________________________
 % INPUTS:
@@ -10,6 +10,14 @@ function files = hcp_grab_spm_maps(path_data)
 % PATH_DATA
 %   (string, default [pwd filesep], aka './') full path to the outputs of
 %   NIAK_CONNECTOME
+%
+% OPT
+%   (structure) with the following fields :
+%
+%   RUN_NAME
+%      (string) The run name to be grabed
+%       WARNING: 'run_name' is the folder name containing the run to be grabbed
+%
 %
 % _________________________________________________________________________
 % OUTPUTS:
@@ -51,15 +59,22 @@ function files = hcp_grab_spm_maps(path_data)
 
 %% Default path
 niak_gb_vars
-if (nargin<1)||isempty(path_data)
+
+%% option 
+opt = psom_struct_defaults( opt , ...
+    { 'run_name' }, ...
+    {  NaN  });
+
+if (nargin<2) && isempty(path_data)
     path_data = [pwd filesep];
 end
 
-if nargin<2
+if nargin<=2
     files = struct();
 end
 
 path_data = niak_full_path(path_data);
+run_name = opt.run_name
 
 %% Initialize the files
 list_subject = dir([path_data 'spm_maps']);
@@ -70,7 +85,7 @@ list_subject = list_subject(~ismember(list_subject,{'.','..','logs_conversion'})
 path_spm = [path_data 'spm_maps'];
 if psom_exist(path_spm)
     % Parse trial IDs
-    list_trial = dir([path_spm filesep list_subject{1} ]);
+    list_trial = dir([path_spm filesep  list_subject{1} filesep run_name]);
     list_trial = {list_trial.name};
     list_trial = list_trial(~ismember(list_trial,{'.','..','logs_conversion'}));
     for ff = 1:length(list_trial)

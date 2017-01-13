@@ -92,7 +92,7 @@ if psom_exist(path_spm)
         [~,name_trial,ext_trial] = niak_fileparts(list_trial{ff});
         name_trial = name_trial(5:end);
         for ss = 1:length(list_subject)
-            files.spm_map.(name_trial).(list_subject{ss}) = [path_spm filesep list_subject{ss} filesep 'spm_' name_trial ext_trial];
+            files.spm_map.(name_trial).(list_subject{ss}) = [path_spm filesep list_subject{ss} filesep  run_name filesep 'spm_' name_trial ext_trial];
         end
     end
 else

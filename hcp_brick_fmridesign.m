@@ -69,7 +69,7 @@ file_onset = in.onset{1};
 if opt.flag_verbose
     fprintf('Read the onset file %s ...\n',file_onset);
 end
-[tab,lx,ly] = niak_read_csv(file_onset{1});
+[tab,lx,ly] = niak_read_csv(file_onset);
 
 %% Reorganize the onsets using numerical IDs for the conditions
 [list_event,tmp,all_event]  = unique(lx);
@@ -92,9 +92,9 @@ end
 for rr = 1:length(in.fmri)
     if (rr>1)
         if opt.flag_verbose
-            fprintf('Read the onset file %s ...\n',file_onset);
+            fprintf('Read the onset file %s ...\n',in.onset{rr});
         end
-        [tab,lx,ly] = niak_read_csv(file_onset{rr});
+        [tab,lx,ly] = niak_read_csv(in.onset{rr});
         %% Reorganize the onsets using numerical IDs for the conditions
         [list_event,tmp,all_event]  = unique(lx);
         opt_m.events = [all_event(:) tab];
@@ -104,7 +104,7 @@ for rr = 1:length(in.fmri)
     if opt.flag_verbose
         fprintf('Read an fMRI volume %s...\n',in.fmri{rr})
     end
-    [hdr,vol] = niak_read_vol(in.fmri{1});
+    [hdr,vol] = niak_read_vol(in.fmri{rr});
     if rr == 1
         mask = niak_mask_brain(vol);
     end

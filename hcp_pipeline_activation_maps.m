@@ -14,6 +14,10 @@ function [pipeline,opt] = hcp_pipeline_activation_maps(files_in,opt)
 %      (string) a 3D+t fMRI dataset. The fields <SUBJECT>, <SESSION> and <RUN> can be
 %      any arbitrary string.
 %
+%   MASK
+%       (string) path to mask of the voxels that will be included in the
+%       time*space array
+%
 %   ONSET.<SUBJECT>.<SESSION>.<RUN>
 %      (string, default 'gb_niak_omitted') a .csv file coding for the time of events.
 %        onset. Exemple:
@@ -56,8 +60,8 @@ function [pipeline,opt] = hcp_pipeline_activation_maps(files_in,opt)
 %
 %
 %% Checking that FILES_IN is in the correct format
-list_fields   = { 'fmri' , 'onset'  };
-list_defaults = { NaN       , NaN   };
+list_fields   = { 'fmri' , 'onset'  ,'mask'};
+list_defaults = { NaN       , NaN   , NaN  };
 files_in      = psom_struct_defaults(files_in,list_fields,list_defaults);
 
 %% Options
@@ -85,6 +89,9 @@ for num_s = 1:length(list_subject)
         in.onset = struct2cell(files_in.onset.(subject).(session_name));
         jopt.folder_out = [folder_out 'spm_maps' filesep subject filesep 'all_runs' ];
         pipeline = psom_add_job(pipeline,name_job,'hcp_brick_fmridesign',in,struct,jopt);
+        flag_multirun.(subject) = true;
+    elseif length(list_run)== 1
+        flag_multirun.(subject) = false;
     end
     % spm maps for each Run
     for num_run=1:length(list_run)
@@ -98,36 +105,29 @@ for num_s = 1:length(list_subject)
     end
 end
 
-% Mean t-maps
-%% all runs
-for num_s = 1:length(list_subject)
+% Mean t-maps for each trial
+trial_list = fieldnames(pipeline.(sprintf('spm_%s_%s',list_subject{1},list_run{1})).files_out);
+for num_trial = 1:length(trial_list)
+    trial = trial_list{num_trial};
     clear in out jopt
-    subject = list_subject{num_s};
-    list_session = fieldnames(files_in.fmri.(subject));
-    % Session
-    session_name = list_session{1};
-    list_run = fieldnames(files_in.fmri.(subject).(session_name));
-    name_job = sprintf('spm_%s_all_runs',subject);
-    in.fmri  = struct2cell(files_in.fmri.(subject).(session_name));
-    in.onset = struct2cell(files_in.onset.(subject).(session_name));
-    jopt.folder_out = [folder_out 'spm_maps' filesep subject filesep 'all_runs' ];
-    pipeline = psom_add_job(pipeline,name_job,'hcp_brick_fmridesign',in,struct,jopt);
-
-    % %%% this section sould be a brick
-    % for ss = 1 : length(list_subject)
-    %     [~,mask]= niak_read_vol('mean_func_mask.mnc.gz');
-    %     [hdr,vol]= niak_read_vol('spm_map.mnc.gz');
-    %     x = zeros(length(list_subject),sum(mask(:)));
-    %     x(ss,:) = vol(mask > 0);
-    % end
-    % ttest_x = niak_ttest(x);
-    % hdr.file_name = out.(event_name);
-    % niak_write_vol(hdr,niak_tseries2vol(ttest_x(:)',mask));
-
+    name_job = sprintf('spm_%s_all_runs',trial);
+    for num_s = 1:length(list_subject)
+        subject = list_subject{num_s};
+        list_session = fieldnames(files_in.fmri.(subject));
+        session_name = list_session{1};
+        if flag_multirun.(subject)
+           name_job_in = sprintf('spm_%s_all_runs',subject);
+        else
+           list_run = fieldnames(files_in.fmri.(subject).(session_name));
+           name_job_in = sprintf('spm_%s_%s',subject,list_run{1});
+        end
+        in.spm.(subject)  = pipeline.(name_job_in).files_out.(trial);
+    end
+    in.mask = files_in.mask;
+    out = [folder_out 'spm_maps' filesep 'mean_maps' filesep trial '.mnc.gz' ];
+    jopt.flag_verbose = true;
+    pipeline = psom_add_job(pipeline,name_job,'hcp_brick_mean_spm',in,struct,jopt);
 end
-
-
-
 
 %% Run the pipeline
 if ~opt.flag_test

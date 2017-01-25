@@ -66,9 +66,6 @@ folder_out = niak_full_path(opt.folder_out);
 
 %% Read the onset file
 file_onset = in.onset{1};
-if opt.flag_verbose
-    fprintf('Read the onset file %s ...\n',file_onset);
-end
 [tab,lx,ly] = niak_read_csv(file_onset);
 
 %% Reorganize the onsets using numerical IDs for the conditions

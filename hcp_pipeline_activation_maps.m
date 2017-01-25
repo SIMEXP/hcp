@@ -126,7 +126,7 @@ for num_trial = 1:length(trial_list)
     in.mask = files_in.mask;
     out = [folder_out 'spm_maps' filesep 'mean_maps' filesep trial '.mnc.gz' ];
     jopt.flag_verbose = true;
-    pipeline = psom_add_job(pipeline,name_job,'hcp_brick_mean_spm',in,struct,jopt);
+    pipeline = psom_add_job(pipeline,name_job,'hcp_brick_mean_spm',in,out,jopt);
 end
 
 %% Run the pipeline

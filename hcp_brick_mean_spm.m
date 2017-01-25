@@ -69,9 +69,9 @@ end
 [~,mask]= niak_read_vol(in.mask);
 list_subject = fieldnames(in.spm);
 if opt.flag_verbose
-   fprintf('Read and stack volumes of %s subjects ...\n',length(list_subject));
+   fprintf('Read and stack volumes of %i subjects ...\n',length(list_subject));
 end
-x = zeros(length(list_subject),sum(mask(:)));
+x = zeros(length(list_subject),size(mask(mask(:) > 0)));
 
 % Read and stack all volumes
 for ss = 1 : length(list_subject)
@@ -80,12 +80,13 @@ for ss = 1 : length(list_subject)
         fprintf('Read an fMRI volume %s...\n',subject);
     end
     [hdr,vol]= niak_read_vol(in.spm.(subject));
-    x(ss,:) = vol(mask > 0);
+    x(ss,:) = vol(mask > 0)';
 end
 ttest_x = niak_ttest(x);
 
 % Save final tmap
 if opt.flag_verbose
-   fprintf('Save ttest maps %s ...\n',out));
+   fprintf('Save ttest maps %s ...\n',out);
 end
+hdr.file_name = out;
 niak_write_vol(hdr,niak_tseries2vol(ttest_x(:)',mask));

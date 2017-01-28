@@ -1,5 +1,5 @@
-function [in,out,opt] = hcp_brick_mean_spm(in,out,opt)
-% Generate mean activation map form t-maps
+function [in,out,opt] = hcp_brick_group_spm(in,out,opt)
+% Generate group activation map form t-maps
 %
 % SYNTAX: [IN,OUT,OPT] = HCP_BRICK_FMRIDESIGN(IN,OUT,OPT)
 %

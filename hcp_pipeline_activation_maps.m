@@ -105,12 +105,12 @@ for num_s = 1:length(list_subject)
     end
 end
 
-% Mean t-maps for each trial
+% group t-maps for each trial
 trial_list = fieldnames(pipeline.(sprintf('spm_%s_%s',list_subject{1},list_run{1})).files_out);
 for num_trial = 1:length(trial_list)
     trial = trial_list{num_trial};
     clear in out jopt
-    name_job = sprintf('spm_%s_all_runs',trial);
+    name_job = sprintf('spm_%s_group_map',trial);
     for num_s = 1:length(list_subject)
         subject = list_subject{num_s};
         list_session = fieldnames(files_in.fmri.(subject));
@@ -124,9 +124,9 @@ for num_trial = 1:length(trial_list)
         in.spm.(subject)  = pipeline.(name_job_in).files_out.(trial);
     end
     in.mask = files_in.mask;
-    out = [folder_out 'spm_maps' filesep 'mean_maps' filesep trial '.mnc.gz' ];
+    out = [folder_out filesep 'group_maps' filesep trial '.mnc.gz' ];
     jopt.flag_verbose = true;
-    pipeline = psom_add_job(pipeline,name_job,'hcp_brick_mean_spm',in,out,jopt);
+    pipeline = psom_add_job(pipeline,name_job,'hcp_brick_group_spm',in,out,jopt);
 end
 
 %% Run the pipeline

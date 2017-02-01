@@ -100,32 +100,21 @@ pheno_clean_final = pheno_clean(logical(mask_id_stack),:);
 ##### MERGE PHENO FILE WITH SCRUBBING #####
 
 ## Merge the scrubbing to pheno_clean_final
-file_scrub = [path_root 'fmri_preprocess_all_tasks_niak-fix-scrub_900R/quality_control/group_motion/qc_scrubbing_group.csv'];
+file_scrub = [path_root 'fmri_preprocess_all_tasks_niak-fix-scrub_900R/quality_control/group_motion/qc_scrubbing_group_language.csv'];
 scrub_raw = niak_read_csv_cell (file_scrub);
 
 # Select IDs, FD and FD scrubbed for a specific run
-list_scrub = {'','FD','FD_scrubbed'};
+list_scrub = {'','FD_mean','FD_scrubbed_mean'};
 mask_scrub  = ismember(scrub_raw(1,:),list_scrub);
 scrub_clean = scrub_raw(:,mask_scrub);
 
-# grab the header
-scrub_clean_header = scrub_clean(1,:);
-
-# find index matching the task name
-index = strfind(scrub_clean(:,1),'langLR');
-
-# select only matching index
-index = find(~cellfun(@isempty,index));
-
 # keep only matching task name
-scrub_clean_final = scrub_clean(index,:);
-for ii = 1:length(scrub_clean_final)
-    scrub_clean_final(ii,1)=scrub_clean_final{ii,1}(4:end-13);
+for ii = 2:length(scrub_clean_final)
+    scrub_clean(ii,1)=scrub_clean{ii,1}(4:end);
 end
 
-# put back the header
-scrub_clean_final = [scrub_clean_header ; scrub_clean_final];
-merge_pheno_scrub = merge_cell_tab(pheno_clean_final,scrub_clean_final);
+# Merge
+merge_pheno_scrub = merge_cell_tab(pheno_clean_final,scrub_clean);
 
 # remove extra subject id colomn
 merge_pheno_scrub = merge_pheno_scrub(:,~ismember(merge_pheno_scrub(1,:),''));
@@ -134,7 +123,7 @@ merge_pheno_scrub = merge_pheno_scrub(:,~ismember(merge_pheno_scrub(1,:),''));
 merge_pheno_scrub(2:end,1) = strcat('HCP',merge_pheno_scrub(2:end,1));
 
 # Save pheno_scrub_raw
-niak_write_csv_cell([path_root 'pheno/spm_language_LR_pheno_scrub_raw_' date '.csv'],merge_pheno_scrub);
+niak_write_csv_cell([path_root 'pheno/spm_language_pheno_scrub_raw_' date '.csv'],merge_pheno_scrub);
 
 ##### PREPARE MODEL FILE #####
 # recode gender to M=1 F=2
@@ -145,7 +134,7 @@ merge_pheno_scrub(:,index) = strrep (merge_pheno_scrub(:,index),'F','2');
 
 # convert the values into a series of numerical covariates
 list_id = merge_pheno_scrub(2:end,1);
-labels_y = {'Subject','Age_in_Yrs','Handedness','Gender','ReadEng_Unadj','PicVocab_Unadj','ListSort_Unadj','BMI','FD_scrubbed'};
+labels_y = {'Subject','Age_in_Yrs','Handedness','Gender','ReadEng_Unadj','PicVocab_Unadj','ListSort_Unadj','BMI','FD_scrubbed_mean'};
 mask_model  = ismember(merge_pheno_scrub(1,:),labels_y);
 model_clean = merge_pheno_scrub(:,mask_model);
 tab_model_clean = str2double(model_clean(2:end,2:end));
@@ -153,7 +142,7 @@ tab_model_clean = str2double(model_clean(2:end,2:end));
 # save final model file
 opt_csv.labels_x = list_id; # Labels for the rows
 opt_csv.labels_y = model_clean(1,2:end);
-path_model_final = [path_root 'pheno/model_spm_language_LR_' date '.csv'];
+path_model_final = [path_root 'pheno/model_spm_language_' date '.csv'];
 niak_write_csv(path_model_final,tab_model_clean,opt_csv);
 
 ##### PIPELINE OPTIONS ######
@@ -173,7 +162,7 @@ files_in.mask = out_mask;
 files_in.model = path_model_final;
 
 # Confound regression
-opt.stack.regress_conf = {'FD_scrubbed'};     % a list of varaible names to be regressed out
+opt.stack.regress_conf = {'FD_scrubbed_mean'};     % a list of varaible names to be regressed out
 
 # Subtyping
 list_subtype = {5};
@@ -182,7 +171,7 @@ for ll = 1: length(list_subtype)
     opt.subtype.sub_map_type = 'mean';        % the model for the subtype maps (options are 'mean' or 'median')
 
     # General
-    opt.folder_out = [path_root 'subtype_' num2str(opt.subtype.nb_subtype) '_spm_LANGUAGE_LR_' date];
+    opt.folder_out = [path_root 'subtype_' num2str(opt.subtype.nb_subtype) '_spm_LANGUAGE_' date];
 
 
     ## ReadEng_Unadj Association test
@@ -194,7 +183,7 @@ for ll = 1: length(list_subtype)
 
     # Test a main effect of  ReadEng_Unadjfactors
     opt.association.ReadEng_Unadj.contrast.ReadEng_Unadj = 1;    % scalar number for the weight of the variable in the contrast
-    opt.association.ReadEng_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.ReadEng_Unadj.contrast.FD_scrubbed_mean = 0;               % scalar number for the weight of the variable in the contrast
     opt.association.ReadEng_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
     opt.association.ReadEng_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
     opt.association.ReadEng_Unadj.contrast.Handedness = 0;               % scalar number for the weight of the variable in the contrast
@@ -212,7 +201,7 @@ for ll = 1: length(list_subtype)
 
     # Test a main effect of  PicVocab_Unadjfactors
     opt.association.PicVocab_Unadj.contrast.PicVocab_Unadj = 1;    % scalar number for the weight of the variable in the contrast
-    opt.association.PicVocab_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.PicVocab_Unadj.contrast.FD_scrubbed_mean = 0;               % scalar number for the weight of the variable in the contrast
     opt.association.PicVocab_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
     opt.association.PicVocab_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
     opt.association.PicVocab_Unadj.contrast.Handedness = 0;               % scalar number for the weight of the variable in the contrast
@@ -230,7 +219,7 @@ for ll = 1: length(list_subtype)
 
     # Test a main effect of  ListSort_Unadjfactors
     opt.association.ListSort_Unadj.contrast.ListSort_Unadj = 1;    % scalar number for the weight of the variable in the contrast
-    opt.association.ListSort_Unadj.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.ListSort_Unadj.contrast.FD_scrubbed_mean = 0;               % scalar number for the weight of the variable in the contrast
     opt.association.ListSort_Unadj.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
     opt.association.ListSort_Unadj.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
     opt.association.ListSort_Unadj.contrast.Handedness = 0;               % scalar number for the weight of the variable in the contrast
@@ -248,7 +237,7 @@ for ll = 1: length(list_subtype)
 
     # Test a main effect of  BMIfactors
     opt.association.BMI.contrast.BMI = 1;    % scalar number for the weight of the variable in the contrast
-    opt.association.BMI.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.BMI.contrast.FD_scrubbed_mean = 0;               % scalar number for the weight of the variable in the contrast
     opt.association.BMI.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
     opt.association.BMI.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
     opt.association.BMI.contrast.Handedness = 0;               % scalar number for the weight of the variable in the contrast
@@ -266,14 +255,12 @@ for ll = 1: length(list_subtype)
 
     # Test a main effect of  Handednessfactors
     opt.association.Handedness.contrast.Handedness = 1;    % scalar number for the weight of the variable in the contrast
-    opt.association.Handedness.contrast.FD_scrubbed = 0;               % scalar number for the weight of the variable in the contrast
+    opt.association.Handedness.contrast.FD_scrubbed_mean = 0;               % scalar number for the weight of the variable in the contrast
     opt.association.Handedness.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
     opt.association.Handedness.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
 
     # Visualization
     opt.association.Handedness.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
-
-
 
 
     ##### Run the pipeline  #####

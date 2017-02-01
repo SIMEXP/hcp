@@ -30,15 +30,15 @@
 % OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 % THE SOFTWARE.
 
-%% Setting input/output server 
+%% Setting input/output server
 [status,cmdout] = system ('uname -n');
 server          = strtrim(cmdout);
 if strfind(server,'lg-1r') % This is guillimin
-    path_root = '/gs/project/gsf-624-aa/HCP/';#guillimin 
+    path_root = '/gs/project/gsf-624-aa/HCP/';#guillimin
     fprintf ('server: %s (Guillimin) \n ',server)
     my_user_name = getenv('USER');
 elseif strfind(server,'stark') % this is stark
-    path_root = '/home/yassinebha/data/HCP/';#stark  
+    path_root = '/home/yassinebha/data/HCP/';#stark
     fprintf ('server: %s \n',server)
     my_user_name = getenv('USER');
 else
@@ -71,8 +71,8 @@ pheno_clean = pheno_raw(:,mask_pheno);
 pheno_clean = [pheno_raw(:,ismember(pheno_raw(1,:),'Subject'))(:,1) pheno_clean];
 
 ## Grab spm maps
-path_spm = [path_root 'hcp_language_activation_maps_10-Jan-2017'];
-opt_spm.run_name = 'langLR'; 
+path_spm = [path_root 'hcp_language_activation_maps_24-Jan-2017'];
+opt_spm.run_name = 'all_runs';
 files_spm = hcp_grab_spm_maps(path_spm,opt_spm);
 files_in.data = files_spm.spm_map;
 
@@ -202,7 +202,7 @@ for ll = 1: length(list_subtype)
     # Visualization
     opt.association.ReadEng_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
 
-   
+
     ## PicVocab_Unadj Association test
     # GLM options
     opt.association.PicVocab_Unadj.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
@@ -220,7 +220,7 @@ for ll = 1: length(list_subtype)
     # Visualization
     opt.association.PicVocab_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
 
-   
+
     ## ListSort_Unadj Association test
     # GLM options
     opt.association.ListSort_Unadj.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
@@ -238,7 +238,7 @@ for ll = 1: length(list_subtype)
     # Visualization
     opt.association.ListSort_Unadj.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
 
-   
+
     ## BMI Association test
     # GLM options
     opt.association.BMI.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
@@ -256,7 +256,7 @@ for ll = 1: length(list_subtype)
     # Visualization
     opt.association.BMI.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
 
-   
+
     ## Handedness Association test
     # GLM options
     opt.association.Handedness.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
@@ -275,7 +275,7 @@ for ll = 1: length(list_subtype)
 
 
 
- 
+
     ##### Run the pipeline  #####
     opt.flag_test =false ;  % Put this flag to true to just generate the pipeline without running it.
     pipeline = niak_pipeline_subtype(files_in,opt);

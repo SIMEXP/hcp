@@ -15,7 +15,7 @@ function files = hcp_grab_spm_maps(path_data,opt)
 %   (structure) with the following fields :
 %
 %   RUN_NAME
-%      (string) The run name to be grabed
+%      (string, Default "all_runs" ) The run name to be grabed
 %       WARNING: 'run_name' is the folder name containing the run to be grabbed
 %
 %
@@ -60,10 +60,10 @@ function files = hcp_grab_spm_maps(path_data,opt)
 %% Default path
 niak_gb_vars
 
-%% option 
+%% option
 opt = psom_struct_defaults( opt , ...
     { 'run_name' }, ...
-    {  NaN  });
+    {  'all_runs'  });
 
 if (nargin<2) && isempty(path_data)
     path_data = [pwd filesep];
@@ -74,7 +74,7 @@ if nargin<=2
 end
 
 path_data = niak_full_path(path_data);
-run_name = opt.run_name
+run_name = opt.run_name;
 
 %% Initialize the files
 list_subject = dir([path_data 'spm_maps']);
@@ -92,7 +92,14 @@ if psom_exist(path_spm)
         [~,name_trial,ext_trial] = niak_fileparts(list_trial{ff});
         name_trial = name_trial(5:end);
         for ss = 1:length(list_subject)
-            files.spm_map.(name_trial).(list_subject{ss}) = [path_spm filesep list_subject{ss} filesep  run_name filesep 'spm_' name_trial ext_trial];
+            subject = list_subject{ss};
+            spm_file_name = [path_spm filesep subject filesep  run_name filesep 'spm_' name_trial ext_trial];
+            if exist(spm_file_name)
+               files.spm_map.(name_trial).(subject) = [path_spm filesep subject filesep run_name filesep 'spm_' name_trial ext_trial];
+            else
+               fprintf('warning : Subject %s has no data for trial %s \n',subject,name_trial)
+               continue
+            end
         end
     end
 else

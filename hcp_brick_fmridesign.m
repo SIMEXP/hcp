@@ -8,6 +8,8 @@ function [in,out,opt] = hcp_brick_fmridesign(in,out,opt)
 %
 % OUT (string, default [pwd]) The full path for output file map.
 %
+% OPT.LIST_EVENT (string, default '') The list of conditions to include in the
+%    model. By default, include them all. 
 % OPT.GLM_TEST (string, default 'ttest') The type of glm test to implement.
 %
 % OPT.FLAG_TEST (boolean, default false) if the flag is true, the brick does nothing but
@@ -60,8 +62,8 @@ end
 
 %% Options
 opt = psom_struct_defaults ( opt , ...
-  {  'folder_out' , 'glm_test' , 'flag_verbose' , 'flag_test' }, ...
-  {  pwd          , 'ttest'    , true           , false         });
+  {  'folder_out' , 'list_event' , 'glm_test' , 'flag_verbose' , 'flag_test' }, ...
+  {  pwd          , {}           , 'ttest'    , true           , false         });
 folder_out = niak_full_path(opt.folder_out);
 
 %% Read the onset file
@@ -69,7 +71,16 @@ file_onset = in.onset{1};
 [tab,lx,ly] = niak_read_csv(file_onset);
 
 %% Reorganize the onsets using numerical IDs for the conditions
-[list_event,tmp,all_event]  = unique(lx);
+[list_event_all,tmp,all_event]  = unique(lx);
+if isempty(opt.list_event)
+    list_event = list_event_all;
+else
+    if any(~ismember(opt.list_event),list_event_all)
+        error('Some of the listed events are not found in the event file');
+    end
+    list_event = opt.list_event;
+end
+
 opt_m.events = [all_event(:) tab];
 
 %% Outputs

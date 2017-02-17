@@ -109,7 +109,7 @@ mask_scrub  = ismember(scrub_raw(1,:),list_scrub);
 scrub_clean = scrub_raw(:,mask_scrub);
 
 # keep only matching task name
-for ii = 2:length(scrub_clean_final)
+for ii = 2:length(scrub_clean)
     scrub_clean(ii,1)=scrub_clean{ii,1}(4:end);
 end
 

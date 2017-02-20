@@ -75,7 +75,7 @@ file_onset = in.onset{1};
 if isempty(opt.list_event)
     list_event = list_event_all;
 else
-    if any(~ismember(opt.list_event),list_event_all)
+    if any(~ismember(opt.list_event,list_event_all))
         error('Some of the listed events are not found in the event file');
     end
     list_event = opt.list_event;
@@ -104,7 +104,7 @@ for rr = 1:length(in.fmri)
         end
         [tab,lx,ly] = niak_read_csv(in.onset{rr});
         %% Reorganize the onsets using numerical IDs for the conditions
-        [list_event,tmp,all_event]  = unique(lx);
+        [list_event_all,tmp,all_event]  = unique(lx);
         opt_m.events = [all_event(:) tab];
     end
     

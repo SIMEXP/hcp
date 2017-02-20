@@ -35,5 +35,6 @@ for ss=1:length(list_subj)
     end
 end
 % set pipeline options
-opt.folder_out = [root_path 'hcp_language_activation_maps_24-Jan-2017'];
+opt.fmridesign.list_event = {'story'};
+opt.folder_out = [root_path 'hcp_language_story_activation_maps_' date];
 [pipeline,opt] = hcp_pipeline_activation_maps(files_in,opt);

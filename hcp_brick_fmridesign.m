@@ -69,18 +69,17 @@ folder_out = niak_full_path(opt.folder_out);
 %% Read the onset file
 file_onset = in.onset{1};
 [tab,lx,ly] = niak_read_csv(file_onset);
-
-%% Reorganize the onsets using numerical IDs for the conditions
-[list_event_all,tmp,all_event]  = unique(lx);
-if isempty(opt.list_event)
-    list_event = list_event_all;
-else
-    if any(~ismember(opt.list_event,list_event_all))
-        error('Some of the listed events are not found in the event file');
-    end
-    list_event = opt.list_event;
+if ~isempty(opt.list_event)
+    mask_keep = ismember(lx,opt.list_event);
+    lx = lx(mask_keep);
+    tab = tab(mask_keep,:);
 end
 
+%% Reorganize the onsets using numerical IDs for the conditions
+[list_event,~,all_event]  = unique(lx);
+if any(~ismember(opt.list_event,list_event))
+    error('Some of the listed events are not found in the event file');
+end
 opt_m.events = [all_event(:) tab];
 
 %% Outputs
@@ -103,8 +102,11 @@ for rr = 1:length(in.fmri)
             fprintf('Read the onset file %s ...\n',in.onset{rr});
         end
         [tab,lx,ly] = niak_read_csv(in.onset{rr});
+        mask_keep = ismember(lx,list_event);
+        lx = lx(mask_keep);
+        tab = tab(mask_keep,:);
         %% Reorganize the onsets using numerical IDs for the conditions
-        [list_event_all,tmp,all_event]  = unique(lx);
+        [~,~,all_event]  = unique(lx);
         opt_m.events = [all_event(:) tab];
     end
     

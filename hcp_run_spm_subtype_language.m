@@ -71,7 +71,7 @@ pheno_clean = pheno_raw(:,mask_pheno);
 pheno_clean = [pheno_raw(:,ismember(pheno_raw(1,:),'Subject'))(:,1) pheno_clean];
 
 ## Grab spm maps
-path_spm = [path_root 'hcp_language_activation_maps_24-Jan-2017'];
+path_spm = [path_root 'hcp_language_story_activation_maps_22-Feb-2017'];
 opt_spm.run_name = 'all_runs';
 files_spm = hcp_grab_spm_maps(path_spm,opt_spm);
 files_in.data = files_spm.spm_map;

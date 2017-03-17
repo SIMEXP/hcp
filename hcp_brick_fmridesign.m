@@ -165,6 +165,6 @@ for ee = 1:length(list_event)
     if opt.flag_verbose
        fprintf('    %s\n',out.(list_event{ee}))
     end
-    save([hdr.file_name '.env'])
+    %save([hdr.file_name '.env'])
     niak_write_vol(hdr,niak_tseries2vol(res.eff(:)',mask));
 end

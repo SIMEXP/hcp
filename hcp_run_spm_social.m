@@ -29,12 +29,12 @@ for ss=1:length(list_subj)
         files_in.onset.(subject).sess2.(subj_run) = subj_onset;
         end
     end
-    if ~isfield( files_in.fmri.(subject).sess2,'emLR') && ~isfield( files_in.fmri.(subject).sess2,'emRL')
+    if ~isfield( files_in.fmri.(subject).sess2,'socLR') && ~isfield( files_in.fmri.(subject).sess2,'socRL')
        warning('Subject %s is discarded, has no onset for both runs',subject)
        files_in.fmri = rmfield(files_in.fmri,subject);
     end
 end
 % set pipeline options
-opt.fmridesign.list_event = {'ental'};
-opt.folder_out = [root_path 'hcp_social_mental_activation_maps_' date];
+opt.fmridesign.list_event = {'rnd'};
+opt.folder_out = [root_path 'hcp_social_random_activation_maps_' date];
 [pipeline,opt] = hcp_pipeline_activation_maps(files_in,opt);

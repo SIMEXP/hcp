@@ -118,7 +118,7 @@ opt.stack.regress_conf = {'FD_scrubbed_mean'};     % a list of varaible names to
 
 # Subtyping
 list_subtype = {5};
-numb_cluster = 5;
+num_cluster = 5;
 for ll = 1: length(list_subtype)
     opt.subtype.nb_subtype = list_subtype{ll};       % the number of subtypes to extract
     opt.subtype.sub_map_type = 'mean';        % the model for the subtype maps (options are 'mean' or 'median')

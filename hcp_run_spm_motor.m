@@ -4,7 +4,7 @@
 root_path = '/gs/project/gsf-624-aa/HCP/';
 opt_grab.type_files = 'roi';
 opt_grab.exclude_subject = {'HCP142626','HCP12802'};
-opt_grab.filter.run = {'motRL'};
+opt_grab.filter.run = {'motRL','motLR'};
 opt_grab.min_nb_vol = 100;
 files_grab = niak_grab_fmri_preprocess([root_path 'fmri_preprocess_all_tasks_niak-fix-scrub_900R'], opt_grab);
 files_in.fmri =  files_grab.fmri;
@@ -35,13 +35,9 @@ for ss=1:length(list_subj)
     end
 end
 % set pipeline options
+list_event = {'lh','rh','lf','rf','t'};
 opt.folder_out = [root_path 'hcp_motor_activation_maps_' date];
-[pipeline,opt] = hcp_pipeline_activation_maps(files_in,opt);
-
-
-
-
-
-% set pipeline options
-opt.folder_out = [root_path 'activation_maps'];
-[pipeline,opt] = hcp_pipeline_activation_maps(files_in,opt);
+for ee = 1: length(list_event)
+  opt.fmridesign.list_event = list_event(ee);
+  [pipeline,opt] = hcp_pipeline_activation_maps(files_in,opt);
+end

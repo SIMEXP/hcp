@@ -8,6 +8,7 @@ opt_grab.filter.run = {'motRL','motLR'};
 opt_grab.min_nb_vol = 100;
 files_grab = niak_grab_fmri_preprocess([root_path 'fmri_preprocess_all_tasks_niak-fix-scrub_900R'], opt_grab);
 files_in.fmri =  files_grab.fmri;
+files_in.fmri = rmfield(files_in.fmri,'HCP128026');
 files_in.mask = '/gs/project/gsf-624-aa/HCP/fmri_preprocess_all_tasks_niak-fix-scrub_900R/quality_control/group_coregistration/func_mask_group_stereonl.mnc.gz';
 % grab individul onset files
 list_subj=fieldnames(files_in.fmri);

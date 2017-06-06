@@ -1,4 +1,4 @@
-% Script to run spm maps for wmtask
+% Script to run spm maps for wm task
 
 % Grab fmri files
 root_path = '/gs/project/gsf-624-aa/HCP/';

@@ -87,7 +87,7 @@ for num_s = 1:length(list_subject)
         name_job = sprintf('spm_%s_all_runs',subject);
         in.fmri  = struct2cell(files_in.fmri.(subject).(session_name));
         in.onset = struct2cell(files_in.onset.(subject).(session_name));
-	jopt = opt.fmridesign; 
+	      jopt = opt.fmridesign;
         jopt.folder_out = [folder_out 'spm_maps' filesep subject filesep 'all_runs' ];
         pipeline = psom_add_job(pipeline,name_job,'hcp_brick_fmridesign',in,struct,jopt);
         flag_multirun.(subject) = true;
@@ -102,7 +102,7 @@ for num_s = 1:length(list_subject)
         in.fmri  = files_in.fmri.(subject).(session_name).(run_name);
         in.onset = files_in.onset.(subject).(session_name).(run_name);
         jopt = opt.fmridesign;
-	jopt.folder_out = [folder_out 'spm_maps' filesep subject filesep run_name ];
+	      jopt.folder_out = [folder_out 'spm_maps' filesep subject filesep run_name ];
         pipeline = psom_add_job(pipeline,name_job,'hcp_brick_fmridesign',in,struct,jopt);
     end
 end

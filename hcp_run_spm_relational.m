@@ -1,7 +1,8 @@
 % Script to run spm maps for relational task
 
 % Grab fmri files
-root_path = '/gs/project/gsf-624-aa/HCP/';
+%root_path = '/gs/project/gsf-624-aa/HCP/';
+root_path = '/mnt/data_sq/cisl/HCP/hcp_preprocessed/';
 opt_grab.type_files = 'roi';
 opt_grab.exclude_subject = {'HCP142626'};
 opt_grab.filter.run = {'relRL','relLR'};
@@ -35,9 +36,6 @@ for ss=1:length(list_subj)
     end
 end
 % set pipeline options
-list_event = {'match','relation'};
+opt.fmridesign.list_event = {'match','relation'};
 opt.folder_out = [root_path 'hcp_relational_activation_maps_' date];
-for ee = 1: length(list_event)
-  opt.fmridesign.list_event = list_event(ee);
-  [pipeline,opt] = hcp_pipeline_activation_maps(files_in,opt);
-end
+[pipeline,opt] = hcp_pipeline_activation_maps(files_in,opt);

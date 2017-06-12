@@ -91,6 +91,14 @@ for num_s = 1:length(list_subject)
         jopt.folder_out = [folder_out 'spm_maps' filesep subject filesep 'all_runs' ];
         pipeline = psom_add_job(pipeline,name_job,'hcp_brick_fmridesign',in,struct,jopt);
         flag_multirun.(subject) = true;
+        % contrast trials if available
+        if ~isempty(opt.contrast_trial)
+           clear in out jopt
+           for cc  = 1 length(opt.contrast_trial)
+               contrast_trial1 = opt.contrast_trial{cc,1};
+               contrast_trial2 = opt.contrast_trial{cc,2};
+               in = 
+
     elseif length(list_run)== 1
         flag_multirun.(subject) = false;
     end

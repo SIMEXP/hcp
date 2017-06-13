@@ -145,7 +145,8 @@ for num_s = 1:length(list_subject)
               'contrast_' trial1 '_vs_' trial2 '_' run_name '.nii.gz'];
               command =  '[hdr,vol1] = niak_read_vol(files_in.vol1);[hdr,vol2] = niak_read_vol(files_in.vol2);hdr.file_name = files_out ; niak_write_vol(hdr,vol1-vol2);';
               pipeline.(['contrast_' subject '_' trial1 '_vs_' trial2 '_' run_name]).command = command;
-            end
+          end
+        end
     end
 end
 

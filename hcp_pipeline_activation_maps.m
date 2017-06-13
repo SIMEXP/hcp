@@ -65,8 +65,8 @@ list_defaults = { NaN       , NaN   , NaN  };
 files_in      = psom_struct_defaults(files_in,list_fields,list_defaults);
 
 %% Options
-list_fields   = {  'fmridesign' , 'psom'   , 'folder_out' ,  'flag_test' };
-list_defaults = {  struct()     , struct() , NaN          ,  false       };
+list_fields   = { 'contrast_trial' , 'fmridesign' , 'psom'   , 'folder_out' ,  'flag_test' };
+list_defaults = { {}               , struct()     , struct() , NaN          ,  false       };
 opt = psom_struct_defaults(opt,list_fields,list_defaults);
 folder_out = niak_full_path(opt.folder_out);
 opt.psom.path_logs = [folder_out 'logs' filesep];
@@ -91,14 +91,27 @@ for num_s = 1:length(list_subject)
         jopt.folder_out = [folder_out 'spm_maps' filesep subject filesep 'all_runs' ];
         pipeline = psom_add_job(pipeline,name_job,'hcp_brick_fmridesign',in,struct,jopt);
         flag_multirun.(subject) = true;
-        % contrast trials if available
+        % contrast trials
         if ~isempty(opt.contrast_trial)
-           clear in out jopt
-           for cc  = 1 length(opt.contrast_trial)
-               contrast_trial1 = opt.contrast_trial{cc,1};
-               contrast_trial2 = opt.contrast_trial{cc,2};
-               in = 
-
+          list_event =  fieldnames(pipeline.(['spm_' subject '_all_runs']).files_out);
+          if any(~prod(ismember(opt.contrast_trial,list_event)))
+             list_wrong_contrast = opt.contrast_trial(~ismember(opt.contrast_trial,opt.fmridesign.list_event))
+             error('wrong contrast name %s\n',list_wrong_contrast{})
+          end
+          clear in out jopt
+          for cc  = 1:size(opt.contrast_trial)(1)
+              trial1 = opt.contrast_trial{cc,1};
+              trial2 = opt.contrast_trial{cc,2};
+              pipeline.(['contrast_' subject '_' trial1 '_vs_' trial2 '_all_runs']).files_in.vol1 = ...
+              pipeline.(['spm_' subject '_all_runs']).files_out.(trial1);
+              pipeline.(['contrast_' subject '_' trial1 '_vs_' trial2 '_all_runs']).files_in.vol2 = ...
+              pipeline.(['spm_' subject '_all_runs']).files_out.(trial2);
+              pipeline.(['contrast_' subject '_' trial1 '_vs_' trial2 '_all_runs']).files_out = ...
+              [folder_out 'spm_maps' filesep subject filesep 'all_runs' filesep ...
+              'contrast_' trial1 '_vs_' trial2 '.nii.gz'];
+              command =  '[hdr,vol1] = niak_read_vol(files_in.vol1);[hdr,vol2] = niak_read_vol(files_in.vol2);hdr.file_name = files_out ; niak_write_vol(hdr,vol1-vol2);';
+              pipeline.(['contrast_' subject '_' trial1 '_vs_' trial2 '_all_runs']).command = command;
+            end
     elseif length(list_run)== 1
         flag_multirun.(subject) = false;
     end
@@ -112,6 +125,27 @@ for num_s = 1:length(list_subject)
         jopt = opt.fmridesign;
 	      jopt.folder_out = [folder_out 'spm_maps' filesep subject filesep run_name ];
         pipeline = psom_add_job(pipeline,name_job,'hcp_brick_fmridesign',in,struct,jopt);
+
+        % contrast trials
+        if ~isempty(opt.contrast_trial)
+          list_event =  fieldnames(pipeline.(['spm_' subject '_' run_name]).files_out);
+          if any(~prod(ismember(opt.contrast_trial,list_event)))
+             list_wrong_contrast = opt.contrast_trial(~ismember(opt.contrast_trial,opt.fmridesign.list_event))
+             error('wrong contrast name %s\n',list_wrong_contrast{})
+          end
+          for cc = 1:size(opt.contrast_trial)(1)
+              trial1 = opt.contrast_trial{cc,1};
+              trial2 = opt.contrast_trial{cc,2};
+              pipeline.(['contrast_' subject '_' trial1 '_vs_' trial2 '_' run_name]).files_in.vol1 = ...
+              pipeline.(['spm_' subject '_' run_name]).files_out.(trial1);
+              pipeline.(['contrast_' subject '_' trial1 '_vs_' trial2 '_' run_name]).files_in.vol2 = ...
+              pipeline.(['spm_' subject '_' run_name]).files_out.(trial2);
+              pipeline.(['contrast_' subject '_' trial1 '_vs_' trial2 '_' run_name]).files_out = ...
+              [folder_out 'spm_maps' filesep subject filesep run_name filesep ...
+              'contrast_' trial1 '_vs_' trial2 '_' run_name '.nii.gz'];
+              command =  '[hdr,vol1] = niak_read_vol(files_in.vol1);[hdr,vol2] = niak_read_vol(files_in.vol2);hdr.file_name = files_out ; niak_write_vol(hdr,vol1-vol2);';
+              pipeline.(['contrast_' subject '_' trial1 '_vs_' trial2 '_' run_name]).command = command;
+            end
     end
 end
 

@@ -98,7 +98,7 @@ for num_s = 1:length(list_subject)
              list_wrong_contrast = opt.contrast_trial(~ismember(opt.contrast_trial,opt.fmridesign.list_event))
              error('wrong contrast name %s\n',list_wrong_contrast{})
           end
-          clear in out jopt
+
           for cc  = 1:size(opt.contrast_trial)(1)
               trial1 = opt.contrast_trial{cc,1};
               trial2 = opt.contrast_trial{cc,2};
@@ -111,7 +111,8 @@ for num_s = 1:length(list_subject)
               'contrast_' trial1 '_vs_' trial2 '.nii.gz'];
               command =  '[hdr,vol1] = niak_read_vol(files_in.vol1);[hdr,vol2] = niak_read_vol(files_in.vol2);hdr.file_name = files_out ; niak_write_vol(hdr,vol1-vol2);';
               pipeline.(['contrast_' subject '_' trial1 '_vs_' trial2 '_all_runs']).command = command;
-            end
+          end
+        end
     elseif length(list_run)== 1
         flag_multirun.(subject) = false;
     end
@@ -169,10 +170,37 @@ for num_trial = 1:length(trial_list)
         in.spm.(subject)  = pipeline.(name_job_in).files_out.(trial);
     end
     in.mask = files_in.mask;
-    out = [folder_out filesep 'group_maps' filesep trial '.mnc.gz' ];
+    out = [folder_out filesep 'group_maps' filesep trial '.nii.gz' ];
     jopt.flag_verbose = true;
     pipeline = psom_add_job(pipeline,name_job,'hcp_brick_group_spm',in,out,jopt);
 end
+
+
+% group t-maps for contrast maps
+for tt = 1:size(opt.contrast_trial)(1)
+    trial1 = opt.contrast_trial{tt,1};
+    trial2 = opt.contrast_trial{tt,2};
+    trial = [trial1 '_vs_' trial2];
+    clear in out jopt
+    name_job = sprintf('spm_%s_group_map',trial);
+    for num_s = 1:length(list_subject)
+        subject = list_subject{num_s};
+        list_session = fieldnames(files_in.fmri.(subject));
+        session_name = list_session{1};
+        if flag_multirun.(subject)
+           name_job_in =['contrast_' subject '_' trial1 '_vs_' trial2 '_all_runs'];
+        else
+           list_run = fieldnames(files_in.fmri.(subject).(session_name));
+           name_job_in = ['contrast_' subject '_' trial1 '_vs_' trial2 '_' list_run{1}];
+        end
+        in.spm.(subject)  = pipeline.(name_job_in).files_out;
+    end
+    in.mask = files_in.mask;
+    out = [folder_out filesep 'group_maps' filesep trial '.nii.gz' ];
+    jopt.flag_verbose = true;
+    pipeline = psom_add_job(pipeline,name_job,'hcp_brick_group_spm',in,out,jopt);
+end
+
 
 %% Run the pipeline
 if ~opt.flag_test

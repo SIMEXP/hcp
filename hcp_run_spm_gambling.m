@@ -35,9 +35,7 @@ for ss=1:length(list_subj)
     end
 end
 % set pipeline options
-list_event = {'win', 'win_event', 'loss_event', 'neut_event', 'loss'};
+opt.fmridesign.list_event = {'win', 'win_event', 'loss_event', 'neut_event', 'loss'};
+opt.contrast_trial = {'win','loss';'win_event','loss_event'; 'win_event','neut_event';'loss_event','neut_event'};
 opt.folder_out = [root_path 'hcp_gamb_activation_maps_' date];
-for ee = 1: length(list_event)
-  opt.fmridesign.list_event = list_event(ee);
-  [pipeline,opt] = hcp_pipeline_activation_maps(files_in,opt);
-end
+[pipeline,opt] = hcp_pipeline_activation_maps(files_in,opt);

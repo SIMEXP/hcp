@@ -36,7 +36,7 @@ for ss=1:length(list_subj)
     end
 end
 % set pipeline options
-opt.fmridesign.list_event = {'match','relation'};
-opt.contrast_trial = {'match','relation'};
+opt.fmridesign.list_event = {'relation','match'};
+opt.contrast_trial = {'relation','match'};
 opt.folder_out = [root_path 'hcp_relational_activation_maps_' date];
 [pipeline,opt] = hcp_pipeline_activation_maps(files_in,opt);

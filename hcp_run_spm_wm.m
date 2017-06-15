@@ -35,7 +35,7 @@ for ss=1:length(list_subj)
     end
 end
 % set pipeline options
-opt.fmridesign.list_event  = {'all_bk_cor','2bk_faces','0bk_body','0bk_faces','2bk_places','0bk_places','2bk_body','0bk_tools','2bk_tools'};
-opt.contrast_trial = {'2bk_faces','0bk_faces';'2bk_body','0bk_body';'2bk_places','0bk_places';'2bk_tools','0bk_tools'};
+opt.fmridesign.list_event  = {'2bk','0bk','faces','places','body','tools'};
+opt.contrast_trial = {'2bk','0bk';'body','places';'faces','places';'tools','places'};
 opt.folder_out = [root_path 'hcp_wm_activation_maps_' date];
 [pipeline,opt] = hcp_pipeline_activation_maps(files_in,opt);

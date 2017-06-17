@@ -36,5 +36,6 @@ for ss=1:length(list_subj)
 end
 % set pipeline options
 opt.fmridesign.list_event = {'fear','neut'};
+opt.contrast_trial = {'fear','neut'};
 opt.folder_out = [root_path 'hcp_emotion_activation_maps_' date];
 [pipeline,opt] = hcp_pipeline_activation_maps(files_in,opt);

@@ -65,7 +65,7 @@ file_pheno = [path_root 'pheno/hcp_pheno_social.csv'];
 
 
 ## Grab spm maps
-path_spm = [path_root 'hcp_social_mental_activation_maps_04-May-2017'];
+path_spm = [path_root 'hcp_social_random_activation_maps_05-May-2017'];
 opt_spm.run_name = 'all_runs';
 files_spm = hcp_grab_spm_maps(path_spm,opt_spm);
 files_in.data = files_spm.spm_map;

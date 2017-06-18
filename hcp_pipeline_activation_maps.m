@@ -108,7 +108,7 @@ for num_s = 1:length(list_subject)
               pipeline.(['spm_' subject '_all_runs']).files_out.(trial2);
               pipeline.(['contrast_' subject '_' trial1 '_vs_' trial2 '_all_runs']).files_out = ...
               [folder_out 'spm_maps' filesep subject filesep 'all_runs' filesep ...
-              'contrast_' trial1 '_vs_' trial2 '.nii.gz'];
+              'spm_contrast_' trial1 '_vs_' trial2 '.nii.gz'];
               command =  '[hdr,vol1] = niak_read_vol(files_in.vol1);[hdr,vol2] = niak_read_vol(files_in.vol2);hdr.file_name = files_out ; niak_write_vol(hdr,vol1-vol2);';
               pipeline.(['contrast_' subject '_' trial1 '_vs_' trial2 '_all_runs']).command = command;
           end
@@ -143,7 +143,7 @@ for num_s = 1:length(list_subject)
               pipeline.(['spm_' subject '_' run_name]).files_out.(trial2);
               pipeline.(['contrast_' subject '_' trial1 '_vs_' trial2 '_' run_name]).files_out = ...
               [folder_out 'spm_maps' filesep subject filesep run_name filesep ...
-              'contrast_' trial1 '_vs_' trial2 '_' run_name '.nii.gz'];
+              'spm_contrast_' trial1 '_vs_' trial2 '_' run_name '.nii.gz'];
               command =  '[hdr,vol1] = niak_read_vol(files_in.vol1);[hdr,vol2] = niak_read_vol(files_in.vol2);hdr.file_name = files_out ; niak_write_vol(hdr,vol1-vol2);';
               pipeline.(['contrast_' subject '_' trial1 '_vs_' trial2 '_' run_name]).command = command;
           end

@@ -60,12 +60,12 @@ end
 
 ### Clean Pheno file ###
 path_root = '/home/yassinebha/database/HCP/';
-file_pheno = [path_root 'pheno/hcp_pheno_social.csv'];
+file_pheno = [path_root 'pheno/hcp_pheno_wm.csv'];
 [TAB,LABELS_X,LABELS_Y,LABELS_ID] = niak_read_csv(file_pheno);
 
 
 ## Grab spm maps
-path_spm = [path_root 'hcp_social_random_activation_maps_05-May-2017'];
+path_spm = [path_root 'hcp_wm_activation_maps_15-Jun-2017'];
 opt_spm.run_name = 'all_runs';
 files_spm = hcp_grab_spm_maps(path_spm,opt_spm);
 files_in.data = files_spm.spm_map;
@@ -94,7 +94,7 @@ LABELS_X_clean = LABELS_X(logical(mask_id_stack),:);
 opt_csv.labels_x = LABELS_X_clean;
 opt_csv.labels_y = LABELS_Y;
 opt_csv.labels_id = LABELS_ID;
-path_model_clean = [path_root 'pheno/model_spm_social_' date '.csv'];
+path_model_clean = [path_root 'pheno/model_spm_wm_' date '.csv'];
 niak_write_csv(path_model_clean,TAB_clean,opt_csv);
 
 ##### PIPELINE OPTIONS ######
@@ -118,13 +118,24 @@ opt.stack.regress_conf = {'FD_scrubbed_mean'};     % a list of varaible names to
 
 # Subtyping
 list_subtype = {5};
-num_cluster = 5;
+# number of phenotypic clusters
+clust_match = regexp(LABELS_Y,'cluster_*');
+count = 0 ;
+for ii=1:length (clust_match)
+  if isempty (clust_match{ii})
+    continue
+  else
+    count = count +1;
+  end
+end
+num_cluster = count;
+
 for ll = 1: length(list_subtype)
     opt.subtype.nb_subtype = list_subtype{ll};       % the number of subtypes to extract
     opt.subtype.sub_map_type = 'mean';        % the model for the subtype maps (options are 'mean' or 'median')
 
     # General
-    opt.folder_out = [path_root 'subtype_' num2str(opt.subtype.nb_subtype) '_spm_SOCIAL_mental_' date];
+    opt.folder_out = [path_root 'subtype_' num2str(opt.subtype.nb_subtype) '_spm_WM_' date];
 
     ## clusters Association test
     for cc = 1:num_cluster
@@ -145,23 +156,6 @@ for ll = 1: length(list_subtype)
         # Visualization
         opt.association.(cluster).type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
     end
-
-    ## Handedness Association test
-    # GLM options
-    opt.association.Handedness.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
-    opt.association.Handedness.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
-    opt.association.Handedness.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
-    opt.association.Handedness.flag_intercept = true;                % turn on/off adding a constant covariate to the model
-
-    # Test a main effect of  Handednessfactors
-    opt.association.Handedness.contrast.Handedness = 1;    % scalar number for the weight of the variable in the contrast
-    opt.association.Handedness.contrast.FD_scrubbed_mean = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.Handedness.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.Handedness.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
-
-    # Visualization
-    opt.association.Handedness.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
-
 
     ##### Run the pipeline  #####
     opt.flag_test =false ;  % Put this flag to true to just generate the pipeline without running it.

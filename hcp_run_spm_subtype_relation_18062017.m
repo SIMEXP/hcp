@@ -60,12 +60,12 @@ end
 
 ### Clean Pheno file ###
 path_root = '/home/yassinebha/database/HCP/';
-file_pheno = [path_root 'pheno/hcp_pheno_emotion.csv'];
+file_pheno = [path_root 'pheno/hcp_pheno_relational.csv'];
 [TAB,LABELS_X,LABELS_Y,LABELS_ID] = niak_read_csv(file_pheno);
 
 
 ## Grab spm maps
-path_spm = [path_root 'hcp_emotion_activation_maps_17-Jun-2017'];
+path_spm = [path_root 'hcp_relational_activation_maps_12-Jun-2017'];
 opt_spm.run_name = 'all_runs';
 files_spm = hcp_grab_spm_maps(path_spm,opt_spm);
 files_in.data = files_spm.spm_map;
@@ -94,7 +94,7 @@ LABELS_X_clean = LABELS_X(logical(mask_id_stack),:);
 opt_csv.labels_x = LABELS_X_clean;
 opt_csv.labels_y = LABELS_Y;
 opt_csv.labels_id = LABELS_ID;
-path_model_clean = [path_root 'pheno/model_spm_emotion_' date '.csv'];
+path_model_clean = [path_root 'pheno/model_spm_relational_' date '.csv'];
 niak_write_csv(path_model_clean,TAB_clean,opt_csv);
 
 ##### PIPELINE OPTIONS ######
@@ -135,7 +135,7 @@ for ll = 1: length(list_subtype)
     opt.subtype.sub_map_type = 'mean';        % the model for the subtype maps (options are 'mean' or 'median')
 
     # General
-    opt.folder_out = [path_root 'subtype_' num2str(opt.subtype.nb_subtype) '_spm_EMOTION_' date];
+    opt.folder_out = [path_root 'subtype_' num2str(opt.subtype.nb_subtype) '_spm_RELATIONAL_' date];
 
     ## clusters Association test
     for cc = 1:num_cluster
@@ -156,6 +156,7 @@ for ll = 1: length(list_subtype)
         # Visualization
         opt.association.(cluster).type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
     end
+
     ##### Run the pipeline  #####
     opt.flag_test =false ;  % Put this flag to true to just generate the pipeline without running it.
     pipeline = niak_pipeline_subtype(files_in,opt);

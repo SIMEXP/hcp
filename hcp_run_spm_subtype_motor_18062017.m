@@ -65,7 +65,7 @@ file_pheno = [path_root 'pheno/hcp_pheno_motor.csv'];
 
 
 ## Grab spm maps
-path_spm = [path_root 'hcp_motor_activation_maps_29-May-2017'];
+path_spm = [path_root 'hcp_motor_activation_maps_18-Jun-2017'];
 opt_spm.run_name = 'all_runs';
 files_spm = hcp_grab_spm_maps(path_spm,opt_spm);
 files_in.data = files_spm.spm_map;
@@ -118,7 +118,18 @@ opt.stack.regress_conf = {'FD_scrubbed_mean'};     % a list of varaible names to
 
 # Subtyping
 list_subtype = {5};
-num_cluster = 5;
+# number of phenotypic clusters
+clust_match = regexp(LABELS_Y,'cluster_*');
+count = 0 ;
+for ii=1:length (clust_match)
+  if isempty (clust_match{ii})
+    continue
+  else
+    count = count +1;
+  end
+end
+num_cluster = count;
+
 for ll = 1: length(list_subtype)
     opt.subtype.nb_subtype = list_subtype{ll};       % the number of subtypes to extract
     opt.subtype.sub_map_type = 'mean';        % the model for the subtype maps (options are 'mean' or 'median')
@@ -145,23 +156,6 @@ for ll = 1: length(list_subtype)
         # Visualization
         opt.association.(cluster).type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
     end
-
-    ## Handedness Association test
-    # GLM options
-    opt.association.Handedness.fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
-    opt.association.Handedness.normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
-    opt.association.Handedness.normalize_y = false;                  % turn on/off normalization of all data (true: apply / false: don't apply)
-    opt.association.Handedness.flag_intercept = true;                % turn on/off adding a constant covariate to the model
-
-    # Test a main effect of  Handednessfactors
-    opt.association.Handedness.contrast.Handedness = 1;    % scalar number for the weight of the variable in the contrast
-    opt.association.Handedness.contrast.FD_scrubbed_mean = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.Handedness.contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
-    opt.association.Handedness.contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
-
-    # Visualization
-    opt.association.Handedness.type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')
-
 
     ##### Run the pipeline  #####
     opt.flag_test =false ;  % Put this flag to true to just generate the pipeline without running it.

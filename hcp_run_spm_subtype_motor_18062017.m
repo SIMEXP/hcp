@@ -65,7 +65,7 @@ file_pheno = [path_root 'pheno/hcp_pheno_motor.csv'];
 
 
 ## Grab spm maps
-path_spm = [path_root 'hcp_motor_activation_maps_18-Jun-2017'];
+path_spm = [path_root 'hcp_motor_activation_maps_19-Jun-2017'];
 opt_spm.run_name = 'all_runs';
 files_spm = hcp_grab_spm_maps(path_spm,opt_spm);
 files_in.data = files_spm.spm_map;

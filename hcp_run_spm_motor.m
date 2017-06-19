@@ -37,6 +37,6 @@ for ss=1:length(list_subj)
 end
 % set pipeline options
 opt.fmridesign.list_event  = {'lh','rh','lf','rf','t'};
-opt.contrast_trial = {'lh','lf';'rh','rf'};
+opt.contrast_trial = {'rh','lh';'rf','lf'};
 opt.folder_out = [root_path 'hcp_motor_activation_maps_' date];
 [pipeline,opt] = hcp_pipeline_activation_maps(files_in,opt);

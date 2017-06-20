@@ -1,8 +1,8 @@
 # Grab R-squared from assosiation
 clear all
 root_path = '/home/yassinebha/Drive/HCP/subtypes_scores/26-10-2016/';
-path_association = [root_path 'subtype_5_spm_SOCIAL_mental_23-May-2017/associations/'];
-path_networks = [root_path 'subtype_5_spm_SOCIAL_mental_23-May-2017/networks/'];
+path_association = [root_path 'subtype_5_spm_EMOTION_17-Jun-2017/associations/'];
+path_networks = [root_path 'subtype_5_spm_EMOTION_17-Jun-2017/networks/'];
 
 list_pheno = dir(path_association);
 list_pheno = {list_pheno.name};

@@ -18,6 +18,9 @@ function files = hcp_grab_spm_maps(path_data,opt)
 %      (string, Default "all_runs" ) The run name to be grabed
 %       WARNING: 'run_name' is the folder name containing the run to be grabbed
 %
+%  LIST_TRIAL
+%      (string, Default "" ) The trial names to be grabed
+%      If empty all trial will be grabbed
 %
 % _________________________________________________________________________
 % OUTPUTS:
@@ -62,8 +65,8 @@ niak_gb_vars
 
 %% option
 opt = psom_struct_defaults( opt , ...
-    { 'run_name' }, ...
-    {  'all_runs'  });
+    { 'run_name' ,'list_trial'}, ...
+    {  'all_runs',''          });
 
 if (nargin<2) && isempty(path_data)
     path_data = [pwd filesep];
@@ -85,9 +88,13 @@ list_subject = list_subject(~ismember(list_subject,{'.','..','logs_conversion'})
 path_spm = [path_data 'spm_maps'];
 if psom_exist(path_spm)
     % Parse trial IDs
-    list_trial = dir([path_spm filesep  list_subject{1} filesep run_name]);
-    list_trial = {list_trial.name};
-    list_trial = list_trial(~ismember(list_trial,{'.','..','logs_conversion'}));
+    if isempty(opt.list_trial)
+        list_trial = dir([path_spm filesep  list_subject{1} filesep run_name]);
+        list_trial = {list_trial.name};
+        list_trial = list_trial(~ismember(list_trial,{'.','..','logs_conversion'}));
+    else
+      list_trial = opt.list_trial;
+    end
     for ff = 1:length(list_trial)
         [~,name_trial,ext_trial] = niak_fileparts(list_trial{ff});
         name_trial = name_trial(5:end);

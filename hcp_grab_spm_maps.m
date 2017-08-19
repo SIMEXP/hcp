@@ -89,15 +89,18 @@ path_spm = [path_data 'spm_maps'];
 if psom_exist(path_spm)
     % Parse trial IDs
     if isempty(opt.list_trial)
-        list_trial = dir([path_spm filesep  list_subject{1} filesep run_name]);
-        list_trial = {list_trial.name};
-        list_trial = list_trial(~ismember(list_trial,{'.','..','logs_conversion'}));
+      list_trial = dir([path_spm filesep  list_subject{1} filesep run_name]);
+      list_trial = {list_trial.name};
+      list_trial = list_trial(~ismember(list_trial,{'.','..','logs_conversion'}));
+      for ii=1: length(list_trial)
+          list_trial{ii} = list_trial{ii}(5:end-7)
+      end
     else
-      list_trial = opt.list_trial;
+      list_trial = opt.list_trial
     end
     for ff = 1:length(list_trial)
-        [~,name_trial,ext_trial] = niak_fileparts(list_trial{ff});
-        name_trial = name_trial(5:end);
+        name_trial = list_trial{ff};
+        [~,~,ext_trial] = niak_fileparts(dir([path_spm filesep  list_subject{1} filesep run_name filesep 'spm_' name_trial '.*']).name);
         for ss = 1:length(list_subject)
             subject = list_subject{ss};
             spm_file_name = [path_spm filesep subject filesep  run_name filesep 'spm_' name_trial ext_trial];

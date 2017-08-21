@@ -120,7 +120,7 @@ opt.stack.regress_conf = {'FD_scrubbed_mean'};     % a list of varaible names to
 # Subtyping
 list_subtype = {5};
 # number of phenotypic clusters
-clust_match = regexp(LABELS_Y,'cluster_*');
+clust_match = regexp(LABELS_Y,'Cluster_*');
 count = 0 ;
 for ii=1:length (clust_match)
   if isempty (clust_match{ii})
@@ -140,7 +140,7 @@ for ll = 1: length(list_subtype)
 
     ## clusters Association test
     for cc = 1:num_cluster
-        cluster = sprintf('cluster_%s',num2str(cc));
+        cluster = sprintf('Cluster_%s',num2str(cc));
         # GLM options
         opt.association.(cluster).fdr = 0.05;                           % scalar number for the level of acceptable false-discovery rate (FDR) for the t-maps
         opt.association.(cluster).normalize_x = true;                   % turn on/off normalization of covariates in model (true: apply / false: don't apply)
@@ -152,7 +152,6 @@ for ll = 1: length(list_subtype)
         opt.association.(cluster).contrast.FD_scrubbed_mean = 0;               % scalar number for the weight of the variable in the contrast
         opt.association.(cluster).contrast.Age_in_Yrs = 0;               % scalar number for the weight of the variable in the contrast
         opt.association.(cluster).contrast.Gender = 0;               % scalar number for the weight of the variable in the contrast
-        opt.association.(cluster).contrast.Handedness = 0;               % scalar number for the weight of the variable in the contrast
 
         # Visualization
         opt.association.(cluster).type_visu = 'continuous';  % type of data for visulization (options are 'continuous' or 'categorical')

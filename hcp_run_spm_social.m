@@ -37,5 +37,5 @@ end
 % set pipeline options
 opt.fmridesign.list_event = {'mental','rnd' };
 opt.contrast_trial = {'mental','rnd' };
-opt.folder_out = [root_path 'hcp_social_activation_maps_' date];
+opt.folder_out = [root_path 'hcp_social_activation_maps_19-Aug-2017'];
 [pipeline,opt] = hcp_pipeline_activation_maps(files_in,opt);

@@ -117,4 +117,4 @@ else
 end
 
 % Grab the roi mask
-files.roi_mask = [GB_NIAK.path_template filesep 'roi_aal' ext_trial];
+files.roi_mask = [GB_NIAK.path_template filesep 'roi_aal.mnc.gz'];

@@ -65,9 +65,9 @@ file_pheno = [path_root 'pheno/hcp_pheno_wm.csv'];
 
 
 ## Grab spm maps
-path_spm = [path_root 'hcp_wm_activation_maps_15-Jun-2017'];
+path_spm = [path_root 'hcp_wm_activation_maps_24-Aug-2017'];
 opt_spm.run_name = 'all_runs';
-opt_spm.list_trial = {'2bk','0bk','2bk_vs_0bk','contrast_body_vs_other_body','contrast_faces_vs_other_faces',...
+opt_spm.list_trial = {'2bk','0bk','contrast_2bk_vs_0bk','contrast_body_vs_other_body','contrast_faces_vs_other_faces',...
                       'contrast_tools_vs_other_tools','contrast_places_vs_other_places'};
 files_spm = hcp_grab_spm_maps(path_spm,opt_spm);
 files_in.data = files_spm.spm_map;

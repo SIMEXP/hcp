@@ -42,12 +42,18 @@ elseif strfind(server,'ip05') % this is mammouth
     my_user_name = getenv('USER');
 else
     switch server
-        case 'peuplier' % this is peuplier
-        root_path = '/media/scratch2/HCP_unproc_tmp/';
-        path_raw = [root_path 'HCP_unproc_tmp/'];
+        case 'stark' % this is peuplier
+        root_path = '/data/cisl/HCP/hcp_preprocessed/';
+        path_raw = '/data/cisl/raw_data/hcp/raw/';
         fprintf ('server: %s\n',server)
         my_user_name = getenv('USER');
-        
+       
+	case 'pin' % this is peuplier
+        root_path = '/data/cisl/HCP/hcp_preprocessed/';
+        path_raw = '/data/cisl/raw_data/hcp/raw/';
+        fprintf ('server: %s\n',server)
+        my_user_name = getenv('USER');
+ 
         case 'noisetier' % this is noisetier
         root_path = '/media/database1/';
         path_raw = [root_path 'HCP_unproc_tmp/'];
@@ -72,9 +78,9 @@ list_subject = list_subject(~ismember(list_subject,{'.','..','logs_conversion'})
 for num_s = 1:2 %length(list_subject)
     subject = list_subject{num_s};
     id = ['HCP' subject];
-    files_in.(id).anat = [ path_raw subject '/MPR_1/anat_' subject '_MPR1.mnc.gz']; % Structural scan
-    files_in.(id).fmri.sess1.rest1RL = [ path_raw subject '/REST1/func_' subject '_REST1_rl.mnc.gz']; 
-    files_in.(id).fmri.sess1.rest1LR = [ path_raw subject '/REST1/func_' subject '_REST1_lr.mnc.gz']; 
+    files_in.(id).anat = [ path_raw subject '/unprocessed/3T/T1w_MPR1/' subject '_3T_T1w_MPR1.nii.gz']; % Structural scan
+    files_in.(id).fmri.sess1.rest1RL = [ path_raw subject '/unprocessed/3T/rfMRI_REST1_RL/' subject '_3T_rfMRI_REST1_RL.nii.gz']; 
+    files_in.(id).fmri.sess1.rest1LR = [ path_raw subject '/unprocessed/3T/rfMRI_REST1_LR/' subject '_3T_rfMRI_REST1_LR.nii.gz']; 
 %    files_in.(id).fmri.sess1.wmRL = [ path_raw subject '/WM/func_' subject '_WM_rl.mnc.gz']; 
 %    files_in.(id).fmri.sess1.wmLR = [ path_raw subject '/WM/func_' subject '_WM_lr.mnc.gz']; 
 %    files_in.(id).fmri.sess1.gambRL = [ path_raw subject '/GAMBLING/func_' subject '_GAMBLING_rl.mnc.gz']; 
@@ -82,8 +88,8 @@ for num_s = 1:2 %length(list_subject)
 %    files_in.(id).fmri.sess1.motRL = [ path_raw subject '/MOTOR/func_' subject '_MOTOR_rl.mnc.gz']; 
 %    files_in.(id).fmri.sess1.motLR = [ path_raw subject '/MOTOR/func_' subject '_MOTOR_lr.mnc.gz']; 
 
-    files_in.(id).fmri.sess2.rest2LR = [ path_raw subject '/REST2/func_' subject '_REST2_lr.mnc.gz']; 
-    files_in.(id).fmri.sess2.rest2RL = [ path_raw subject '/REST2/func_' subject '_REST2_rl.mnc.gz'];
+    files_in.(id).fmri.sess2.rest2LR = [ path_raw subject '/unprocessed/3T/rfMRI_REST2_LR/' subject '_3T_rfMRI_REST2_LR.nii.gz']; 
+    files_in.(id).fmri.sess2.rest2RL = [ path_raw subject '/unprocessed/3T/rfMRI_REST2_RL/' subject '_3T_rfMRI_REST2_RL.nii.gz'];
 %    files_in.(id).fmri.sess2.langRL = [ path_raw subject '/LANGUAGE/func_' subject '_LANGUAGE_rl.mnc.gz'];   
 %    files_in.(id).fmri.sess2.langLR = [ path_raw subject '/LANGUAGE/func_' subject '_LANGUAGE_lr.mnc.gz'];
 %    files_in.(id).fmri.sess2.socRL = [ path_raw subject '/SOCIAL/func_' subject '_SOCIAL_rl.mnc.gz'];  
@@ -108,8 +114,8 @@ opt.slice_timing.type_acquisition = 'interleaved ascending'; % Slice timing orde
 opt.slice_timing.type_scanner     = 'Siemens';                % Scanner manufacturer. Only the value 'Siemens' will actually have an impact
 opt.slice_timing.delay_in_tr      = 0;                       % The delay in TR ("blank" time between two volumes)
 opt.slice_timing.suppress_vol     = 0;                       % Number of dummy scans to suppress.
-opt.slice_timing.flag_nu_correct  = 1;                       % Apply a correction for non-uniformities on the EPI volumes (1: on, 0: of). This is particularly important for 32-channels coil.
-opt.slice_timing.arg_nu_correct   = '-distance 200';         % The distance between control points for non-uniformity correction (in mm, lower values can capture faster varying slow spatial drifts).
+opt.slice_timing.flag_nu_correct  = 0;                       % Apply a correction for non-uniformities on the EPI volumes (1: on, 0: of). This is particularly important for 32-channels coil.
+opt.slice_timing.arg_nu_correct   = '-distance 75';         % The distance between control points for non-uniformity correction (in mm, lower values can capture faster varying slow spatial drifts).
 opt.slice_timing.flag_center      = 0;                       % Set the origin of the volume at the center of mass of a brain mask. This is useful only if the voxel-to-world transformation from the DICOM header has somehow been damaged. This needs to be assessed on the raw images.
 opt.slice_timing.flag_skip        = 0;                       % Skip the slice timing (0: don't skip, 1 : skip). Note that only the slice timing corretion portion is skipped, not all other effects such as FLAG_CENTER or FLAG_NU_CORRECT
  
@@ -164,7 +170,7 @@ opt.smooth_vol.flag_skip = 0;  % Skip spatial smoothing (0: don't skip, 1 : skip
 %% Run the fmri_preprocess pipeline  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 opt.flag_test = false;
-opt.psom.qsub_options = '-q xlm2 -A gsf-624-aa -l nodes=1:ppn=1,pmem=16000m,walltime=36:00:00';
+%opt.psom.qsub_options = '-q xlm2 -A gsf-624-aa -l nodes=1:ppn=1,pmem=16000m,walltime=36:00:00';
 %opt.psom.max_queued = 7;
 [pipeline,opt] = niak_pipeline_fmri_preprocess(files_in,opt);
 
